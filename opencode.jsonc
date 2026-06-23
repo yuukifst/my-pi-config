@@ -1,0 +1,228 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "opencode-antigravity-auth@latest",
+    "superpowers@git+https://github.com/obra/superpowers.git",
+    "@prevalentware/opencode-goal-plugin",
+    "/home/yk/.local/share/ponytail/.opencode/plugins/ponytail.mjs"
+  ],
+  "provider": {
+    "google": {
+      "models": {
+        "antigravity-gemini-3-pro": {
+          "name": "Gemini 3 Pro (Antigravity)",
+          "limit": { "context": 1048576, "output": 65535 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] },
+          "variants": {
+            "low": { "thinkingLevel": "low" },
+            "high": { "thinkingLevel": "high" }
+          }
+        },
+        "antigravity-gemini-3.1-pro": {
+          "name": "Gemini 3.1 Pro (Antigravity)",
+          "limit": { "context": 1048576, "output": 65535 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] },
+          "variants": {
+            "low": { "thinkingLevel": "low" },
+            "high": { "thinkingLevel": "high" }
+          }
+        },
+        "antigravity-gemini-3-flash": {
+          "name": "Gemini 3 Flash (Antigravity)",
+          "limit": { "context": 1048576, "output": 65536 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] },
+          "variants": {
+            "minimal": { "thinkingLevel": "minimal" },
+            "low": { "thinkingLevel": "low" },
+            "medium": { "thinkingLevel": "medium" },
+            "high": { "thinkingLevel": "high" }
+          }
+        },
+        "antigravity-claude-sonnet-4-6": {
+          "name": "Claude Sonnet 4.6 (Antigravity)",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] }
+        },
+        "antigravity-claude-opus-4-6-thinking": {
+          "name": "Claude Opus 4.6 Thinking (Antigravity)",
+          "limit": { "context": 200000, "output": 64000 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] },
+          "variants": {
+            "low": { "thinkingConfig": { "thinkingBudget": 8192 } },
+            "max": { "thinkingConfig": { "thinkingBudget": 32768 } }
+          }
+        },
+        "gemini-2.5-flash": {
+          "name": "Gemini 2.5 Flash (Gemini CLI)",
+          "limit": { "context": 1048576, "output": 65536 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] }
+        },
+        "gemini-2.5-pro": {
+          "name": "Gemini 2.5 Pro (Gemini CLI)",
+          "limit": { "context": 1048576, "output": 65536 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] }
+        },
+        "gemini-3-flash-preview": {
+          "name": "Gemini 3 Flash Preview (Gemini CLI)",
+          "limit": { "context": 1048576, "output": 65536 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] }
+        },
+        "gemini-3-pro-preview": {
+          "name": "Gemini 3 Pro Preview (Gemini CLI)",
+          "limit": { "context": 1048576, "output": 65535 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] }
+        },
+        "gemini-3.1-pro-preview": {
+          "name": "Gemini 3.1 Pro Preview (Gemini CLI)",
+          "limit": { "context": 1048576, "output": 65535 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] }
+        },
+        "gemini-3.1-pro-preview-customtools": {
+          "name": "Gemini 3.1 Pro Preview Custom Tools (Gemini CLI)",
+          "limit": { "context": 1048576, "output": 65535 },
+          "modalities": { "input": ["text", "image", "pdf"], "output": ["text"] }
+        }
+      }
+    }
+  },
+  "lsp": true,
+  "skills": {
+    "paths": ["/home/yk/.agents/skills"]
+  },
+  "command": {
+    "autoreview": {
+      "template": "Load the autoreview skill via the skill tool and follow its complete workflow for final closeout review.",
+      "description": "Structured second-model review for final closeout"
+    },
+    "claude-md-auditor": {
+      "template": "Load the claude-md-auditor skill via the skill tool and audit the CLAUDE.md/AGENTS.md for structure, conciseness, specificity, and hierarchy.",
+      "description": "Audit CLAUDE.md/AGENTS.md for conciseness and structure"
+    },
+    "discussion-driven-development": {
+      "template": "Load the discussion-driven-development skill via the skill tool and follow its complete workflow for this task. First: detect if this is an existing project or greenfield (no codebase yet, only a spec.md + prototype). Then check if /prototype has already generated HTML UI variations. If prototype files are missing, ask the user to run /prototype first. Then follow the appropriate workflow in the skill for the detected scenario.",
+      "description": "DDD: prototype selection, architecture alignment, ADRs, goal-mode execution"
+    },
+    "grill-me": {
+      "template": "Load the grill-me skill via the skill tool and interview the user relentlessly about their plan or design until reaching shared understanding.",
+      "description": "Stress-test a plan or design through relentless questioning"
+    },
+    "grill-with-docs": {
+      "template": "Load the grill-with-docs skill via the skill tool and challenge the plan against the existing domain model, sharpening terminology and updating docs.",
+      "description": "Stress-test a plan against the domain model and documentation"
+    },
+    "handoff": {
+      "template": "Load the handoff skill via the skill tool and compact the current conversation into a handoff document for another agent.",
+      "description": "Compact conversation into a handoff document for another agent"
+    },
+    "improve": {
+      "template": "Load the improve skill via the skill tool and survey the codebase as a senior advisor, producing prioritized implementation plans. Read-only; no code changes.",
+      "description": "Read-only senior advisor codebase audit with prioritized plans"
+    },
+    "improve-codebase-architecture": {
+      "template": "Load the improve-codebase-architecture skill via the skill tool and analyze the codebase for architecture improvement opportunities.",
+      "description": "Architecture analysis and refactoring opportunities"
+    },
+    "omarchy": {
+      "template": "Load the omarchy skill via the skill tool to configure Hyprland, Waybar, or other Linux desktop/WM settings.",
+      "description": "Linux desktop/WM theming (Hyprland, Waybar, etc.)"
+    },
+    "prototype": {
+      "template": "Load the prototype skill via the skill tool and build a throwaway prototype to flesh out a design before committing to it.",
+      "description": "Throwaway prototype to explore a design"
+    },
+    "setup-matt-pocock-skills": {
+      "template": "Load the setup-matt-pocock-skills skill via the skill tool and configure the issue tracker, triage vocabulary, and domain docs for other skills to use.",
+      "description": "Install issue-tracker/triage/domain skills for the repo"
+    },
+    "skill-cleaner": {
+      "template": "Load the skill-cleaner skill via the skill tool and audit loaded skills for duplicates, unused personal skills, and prompt-budget costs.",
+      "description": "Audit skills for duplicates, dead weight, and costs"
+    },
+    "teach": {
+      "template": "Load the teach skill via the skill tool and teach the user a new skill or concept within this workspace.",
+      "description": "Teach a skill or concept within the workspace"
+    },
+    "thermo-nuclear-code-quality-review": {
+      "template": "Load the thermo-nuclear-code-quality-review skill via the skill tool and perform a maximum-intensity code quality review on the current codebase.",
+      "description": "Maximum-intensity code quality review"
+    },
+    "to-prd": {
+      "template": "Load the to-prd skill via the skill tool and turn the current conversation context into a PRD, publishing it to the project issue tracker.",
+      "description": "Turn conversation context into a PRD and publish it"
+    },
+    "write-a-skill": {
+      "template": "Load the write-a-skill skill via the skill tool and create a new agent skill with proper structure, progressive disclosure, and bundled resources.",
+      "description": "Author a new agent skill"
+    },
+    "brandkit": {
+      "template": "Load the brandkit skill via the skill tool and create brand identity, logo systems, or visual guidelines.",
+      "description": "Brand identity and visual guidelines"
+    },
+    "design-taste-frontend": {
+      "template": "Load the design-taste-frontend skill via the skill tool for anti-slop frontend design. Read the brief, infer direction, ship non-templated interfaces.",
+      "description": "Anti-slop frontend design (v2 experimental)"
+    },
+    "design-taste-frontend-v1": {
+      "template": "Load the design-taste-frontend-v1 skill via the skill tool for original v1 taste frontend design.",
+      "description": "Original v1 frontend design skill"
+    },
+    "emil-design-eng": {
+      "template": "Load the emil-design-eng skill via the skill tool for UI polish, component design, and animation decisions.",
+      "description": "UI polish and animation philosophy"
+    },
+    "gpt-taste": {
+      "template": "Load the gpt-taste skill via the skill tool for GSAP motion, bento grids, and editorial typography design.",
+      "description": "GSAP motion and editorial design"
+    },
+    "high-end-visual-design": {
+      "template": "Load the high-end-visual-design skill via the skill tool for premium agency-level visual design with exact fonts, spacing, and animations.",
+      "description": "Premium agency-level visual design"
+    },
+    "image-to-code": {
+      "template": "Load the image-to-code skill via the skill tool to generate design images first, then implement matching code.",
+      "description": "Design image generation then implementation"
+    },
+    "imagegen-frontend-mobile": {
+      "template": "Load the imagegen-frontend-mobile skill via the skill tool for premium mobile app screen concepts and flows.",
+      "description": "Mobile app design image generation"
+    },
+    "imagegen-frontend-web": {
+      "template": "Load the imagegen-frontend-web skill via the skill tool for premium website design image references.",
+      "description": "Web design image generation"
+    },
+    "impeccable": {
+      "template": "Load the impeccable skill via the skill tool for UI/UX design, redesign, polish, critique, and animation. Use its 23 commands for design work.",
+      "description": "UI/UX design review, polish, and animation"
+    },
+    "industrial-brutalist-ui": {
+      "template": "Load the industrial-brutalist-ui skill via the skill tool for raw mechanical interfaces with Swiss typography and military terminal aesthetics.",
+      "description": "Industrial brutalist UI design"
+    },
+    "minimalist-ui": {
+      "template": "Load the minimalist-ui skill via the skill tool for clean editorial-style interfaces with warm monochrome palette.",
+      "description": "Clean editorial minimalist UI"
+    },
+    "redesign-existing-projects": {
+      "template": "Load the redesign-existing-projects skill via the skill tool to upgrade existing websites and apps to premium quality.",
+      "description": "Upgrade existing projects to premium quality"
+    },
+    "stitch-design-taste": {
+      "template": "Load the stitch-design-taste skill via the skill tool for Google Stitch semantic design system enforcement.",
+      "description": "Google Stitch design system semantics"
+    }
+  },
+  "mcp": {
+    "code-review-graph": {
+      "type": "local",
+      "command": ["/home/yk/.local/share/crg-venv/bin/code-review-graph", "serve"],
+      "enabled": true
+    },
+    // fff fast file-search MCP — bare name relies on install dir being on PATH
+    // (Windows: %LOCALAPPDATA%\fff-mcp\bin\fff-mcp.exe). See README "fff".
+    "fff": {
+      "type": "local",
+      "command": ["fff-mcp"],
+      "enabled": true
+    }
+  }
+}
