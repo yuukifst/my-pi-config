@@ -75,7 +75,7 @@ Generate design references *before* coding. Skip only for small internal CRUD.
 
 ## Code quality & project improvement — skill router (MANDATORY)
 
-**Premise:** improving a project (architecture, code, performance, security) is **intent-routed** — invoke the skill matching the task, then stack the review + security gates before shipping. Unlike the frontend aesthetics these don't conflict; the rule is "don't fly blind — for any non-trivial change the matching lane below is invoked, not skipped." Load each via the Skill tool before acting.
+**Trigger:** any request to improve / "melhorar" the code or project — audit, refactor, harden, optimize, review, "where next" — fires this router. Pick the lane(s) matching the task and stack the review gate before shipping; for any non-trivial change the matching lane is invoked, not skipped. Load each via the Skill tool before acting.
 
 ### Design / architecture (while building or restructuring)
 - `codebase-design` — shared vocabulary + deep-module principles; the reference language for any design/refactor discussion.
@@ -88,21 +88,16 @@ Generate design references *before* coding. Skip only for small internal CRUD.
 ### Debugging
 - `diagnosing-bugs` — disciplined diagnosis loop for hard bugs and performance regressions.
 
-### Performance
-- `react-performance` — React/Next perf (waterfalls, bundle, re-render). Non-React perf → `diagnosing-bugs` (regressions) + the thermo-nuclear perf pass.
-
-### Review gate (before every commit / ship — stack these)
+### Review gate (before every commit / ship)
 - `autoreview` — default closeout review of the diff / branch / PR.
-- `thermo-nuclear-code-quality-review` — escalate here for high-risk diffs (auth, money, concurrency, data-loss): brutal audit of correctness, security, perf, races, leaks, API contracts.
-
-### Security (any auth, input, secrets, endpoint, upload, PII, 3rd-party API)
-- `security-review` — checklist + patterns while building the sensitive surface.
-- `security-bounty-hunter` — adversarial hunt for remotely-reachable, exploitable vulns / attack-surface audit.
+- `thermo-nuclear-code-quality-review` — escalate here for high-risk diffs (auth, money, concurrency, data-loss): brutal audit of correctness, security, performance, races, leaks, API contracts.
 
 ### Minimum bar per change (never ship a non-trivial change unreviewed)
 - **Non-trivial change:** matching design/debug lane while building + `autoreview` before commit.
-- **Touches auth / data / security-sensitive surface:** add `security-review` (building) and escalate the review to `thermo-nuclear-code-quality-review`.
+- **Touches auth / data / security-sensitive or perf-critical surface:** escalate the review to `thermo-nuclear-code-quality-review` (it covers security, performance, races, leaks).
 - **"Audit the project" / roadmap ask:** `improve` (read-only) → hand plans off, don't implement inline.
+
+Security and performance have no dedicated repo skill — `improve` finds those issues, `thermo-nuclear-code-quality-review` audits them.
 
 ## Git — commit & push (read the rules file first)
 
