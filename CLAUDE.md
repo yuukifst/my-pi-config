@@ -88,16 +88,20 @@ Generate design references *before* coding. Skip only for small internal CRUD.
 ### Debugging
 - `diagnosing-bugs` — disciplined diagnosis loop for hard bugs and performance regressions.
 
+### Security (any auth, input, secrets, endpoint, upload, PII, 3rd-party API)
+- `security-review` — checklist + patterns while building the sensitive surface.
+- `security-bounty-hunter` — adversarial hunt for remotely-reachable, exploitable vulns / attack-surface audit.
+
 ### Review gate (before every commit / ship)
 - `autoreview` — default closeout review of the diff / branch / PR.
 - `thermo-nuclear-code-quality-review` — escalate here for high-risk diffs (auth, money, concurrency, data-loss): brutal audit of correctness, security, performance, races, leaks, API contracts.
 
 ### Minimum bar per change (never ship a non-trivial change unreviewed)
 - **Non-trivial change:** matching design/debug lane while building + `autoreview` before commit.
-- **Touches auth / data / security-sensitive or perf-critical surface:** escalate the review to `thermo-nuclear-code-quality-review` (it covers security, performance, races, leaks).
+- **Touches auth / data / security-sensitive surface:** add `security-review` while building and escalate the review to `thermo-nuclear-code-quality-review`.
 - **"Audit the project" / roadmap ask:** `improve` (read-only) → hand plans off, don't implement inline.
 
-Security and performance have no dedicated repo skill — `improve` finds those issues, `thermo-nuclear-code-quality-review` audits them.
+Performance has no dedicated repo skill — `improve` finds perf issues, `thermo-nuclear-code-quality-review` audits them, `diagnosing-bugs` handles regressions.
 
 ## Git — commit & push (read the rules file first)
 
