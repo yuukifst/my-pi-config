@@ -73,6 +73,37 @@ Generate design references *before* coding. Skip only for small internal CRUD.
 - **Internal / CRUD UI:** Phase 0 (1) + Phase 2 + Phase 4 → 3 skills.
 - **Redesign:** `redesign-existing-projects` + Phase 2 + Phase 3 + Phase 4.
 
+## Code quality & project improvement — skill router (MANDATORY)
+
+**Premise:** improving a project (architecture, code, performance, security) is **intent-routed** — invoke the skill matching the task, then stack the review + security gates before shipping. Unlike the frontend aesthetics these don't conflict; the rule is "don't fly blind — for any non-trivial change the matching lane below is invoked, not skipped." Load each via the Skill tool before acting.
+
+### Design / architecture (while building or restructuring)
+- `codebase-design` — shared vocabulary + deep-module principles; the reference language for any design/refactor discussion.
+- `domain-modeling` — only when *changing* the domain model / ubiquitous language (reading it is not this skill).
+- `improve-codebase-architecture` — slash command: scan for deepening opportunities → HTML report → grill the chosen one. Built on `codebase-design`.
+
+### Audit / roadmap (read-only — find the work, don't do it)
+- `improve` — senior-advisor sweep of the whole codebase (bugs, security, perf, test gaps, tech debt, migrations, DX) → prioritized handoff plans for another agent. Never edits source.
+
+### Debugging
+- `diagnosing-bugs` — disciplined diagnosis loop for hard bugs and performance regressions.
+
+### Performance
+- `react-performance` — React/Next perf (waterfalls, bundle, re-render). Non-React perf → `diagnosing-bugs` (regressions) + the thermo-nuclear perf pass.
+
+### Review gate (before every commit / ship — stack these)
+- `autoreview` — default closeout review of the diff / branch / PR.
+- `thermo-nuclear-code-quality-review` — escalate here for high-risk diffs (auth, money, concurrency, data-loss): brutal audit of correctness, security, perf, races, leaks, API contracts.
+
+### Security (any auth, input, secrets, endpoint, upload, PII, 3rd-party API)
+- `security-review` — checklist + patterns while building the sensitive surface.
+- `security-bounty-hunter` — adversarial hunt for remotely-reachable, exploitable vulns / attack-surface audit.
+
+### Minimum bar per change (never ship a non-trivial change unreviewed)
+- **Non-trivial change:** matching design/debug lane while building + `autoreview` before commit.
+- **Touches auth / data / security-sensitive surface:** add `security-review` (building) and escalate the review to `thermo-nuclear-code-quality-review`.
+- **"Audit the project" / roadmap ask:** `improve` (read-only) → hand plans off, don't implement inline.
+
 ## Git — commit & push (read the rules file first)
 
 About to commit or push? Read `~/.claude/rules/git.md` BEFORE acting. It covers: confirming the commit identity (shared/work PC — never commit on the configured identity unconfirmed), Conventional Commits format + allowed types, the `no-mistakes` push gate, and the no-AI-attribution rule (no AI/tool trailers from any agent). Not committing/pushing → skip it.
