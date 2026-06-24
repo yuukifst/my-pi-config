@@ -18,7 +18,7 @@ Cross-project guidance. Lean by design: only what's non-obvious or machine-speci
 - **No TDD / test-first.** Do NOT use the superpowers `test-driven-development` skill or any red-green-refactor flow. Write the implementation first; add a regression test after a bugfix. This overrides any skill that says "always TDD".
 - Same error twice → stop, show error, ask one question. Never install packages to fix errors.
 
-## Code quality (rules that override model defaults)
+## Code rules (override model defaults)
 
 - **Before a helper:** grep for the canonical one. Duplicating an existing helper is a failure, not a nit.
 - **File > 1000 lines = decompose first**, don't append.
@@ -73,33 +73,27 @@ Generate design references *before* coding. Skip only for small internal CRUD.
 - **Internal / CRUD UI:** Phase 0 (1) + Phase 2 + Phase 4 → 3 skills.
 - **Redesign:** `redesign-existing-projects` + Phase 2 + Phase 3 + Phase 4.
 
-## Code quality & project improvement — skill router (MANDATORY)
+## Code quality & project improvement (MANDATORY — skills drive every change)
 
-**Trigger:** any request to improve / "melhorar" the code or project — audit, refactor, harden, optimize, review, "where next" — fires this router. Pick the lane(s) matching the task and stack the review gate before shipping; for any non-trivial change the matching lane is invoked, not skipped. Load each via the Skill tool before acting.
+**Trigger:** any request to improve the code or project — "improve my code", "make the project better", audit, refactor, harden, optimize, review, "where to next".
 
-### Design / architecture (while building or restructuring)
-- `codebase-design` — shared vocabulary + deep-module principles; the reference language for any design/refactor discussion.
-- `domain-modeling` — only when *changing* the domain model / ubiquitous language (reading it is not this skill).
-- `improve-codebase-architecture` — slash command: scan for deepening opportunities → HTML report → grill the chosen one. Built on `codebase-design`.
+**Iron rule:** the agent NEVER improves code from its own judgement. Every change originates from a skill below or from a plan a skill produced. No freelance fixes, no "I'll just clean this up" outside a skill. If no skill covers the work, say so — do not improvise.
 
-### Audit / roadmap (read-only — find the work, don't do it)
-- `improve` — senior-advisor sweep of the whole codebase (bugs, security, perf, test gaps, tech debt, migrations, DX) → prioritized handoff plans for another agent. Never edits source.
+**Execution flow — run it end to end; do not stop at the plan:**
 
-### Debugging
-- `diagnosing-bugs` — disciplined diagnosis loop for hard bugs and performance regressions.
+1. **Audit → plan.** Run `improve`: it surveys the whole codebase (bugs, security, perf, test gaps, tech debt, migrations, DX) and emits prioritized, self-contained plans. `improve` is read-only — it writes the plan, not the code.
+2. **Execute every plan.** Implement each plan `improve` produced, in priority order. Architecture/design work goes through `codebase-design` (vocabulary + deep-module principles) and `improve-codebase-architecture` (deepening opportunities); use `domain-modeling` only when changing the domain model / ubiquitous language. Hard bugs and performance regressions → `diagnosing-bugs`.
+3. **Security.** Any auth / input / secrets / endpoint / upload / PII / 3rd-party surface touched → `security-review` while building, and `security-bounty-hunter` for an adversarial attack-surface pass.
+4. **Review gate (before declaring done or committing).** `autoreview` on the diff / branch / PR; escalate to `thermo-nuclear-code-quality-review` for high-risk diffs (auth, money, concurrency, data-loss) — brutal audit of correctness, security, performance, races, leaks, API contracts.
 
-### Security (any auth, input, secrets, endpoint, upload, PII, 3rd-party API)
-- `security-review` — checklist + patterns while building the sensitive surface.
-- `security-bounty-hunter` — adversarial hunt for remotely-reachable, exploitable vulns / attack-surface audit.
-
-### Review gate (before every commit / ship)
-- `autoreview` — default closeout review of the diff / branch / PR.
-- `thermo-nuclear-code-quality-review` — escalate here for high-risk diffs (auth, money, concurrency, data-loss): brutal audit of correctness, security, performance, races, leaks, API contracts.
-
-### Minimum bar per change (never ship a non-trivial change unreviewed)
-- **Non-trivial change:** matching design/debug lane while building + `autoreview` before commit.
-- **Touches auth / data / security-sensitive surface:** add `security-review` while building and escalate the review to `thermo-nuclear-code-quality-review`.
-- **"Audit the project" / roadmap ask:** `improve` (read-only) → hand plans off, don't implement inline.
+**Skills (all in repo `skills/`):**
+- `improve` — read-only advisor sweep → prioritized plans. The agent then EXECUTES those plans (steps 2–4); it does not hand them off and stop.
+- `codebase-design` — shared vocabulary + deep-module principles for any design/refactor.
+- `improve-codebase-architecture` — scan for deepening opportunities → report → grill. Built on `codebase-design`.
+- `domain-modeling` — only when changing the domain model / ubiquitous language.
+- `diagnosing-bugs` — disciplined loop for hard bugs and performance regressions.
+- `security-review` / `security-bounty-hunter` — building the sensitive surface / hunting exploitable vulns.
+- `autoreview` / `thermo-nuclear-code-quality-review` — closeout review / brutal max-scrutiny escalation.
 
 Performance has no dedicated repo skill — `improve` finds perf issues, `thermo-nuclear-code-quality-review` audits them, `diagnosing-bugs` handles regressions.
 
