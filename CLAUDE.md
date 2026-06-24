@@ -64,14 +64,9 @@ Available frontend/design skills:
 
 ### 1. User identity
 
-Before any commit, ask which identity to use. Example:
+Commits on this machine are authored by the git identity already configured in `git config --global` (set once per machine — never hardcode the address here). Verify before committing with `git config user.name` / `git config user.email`; if either is unset, ask the user.
 
-```
-User: YuukiFST
-Email: faustoyuuki@gmail.com
-```
-
-Use `git -c user.name=<name> -c user.email=<email> commit` to set the correct identity.
+Use the configured identity by default. Only pass `git -c user.name=<name> -c user.email=<email> commit` to override it for a specific commit.
 
 ### 2. Commit messages
 
@@ -103,3 +98,7 @@ Rules:
 Always ask before push: `git push no-mistakes` (AI validation gate) or `git push origin <branch>`?
 
 If using `no-mistakes`, check the remote exists (`git remote` shows `no-mistakes`). If missing, run `no-mistakes init` in the repo. The remote is per-repo — a freshly cloned project won't have it until `init` runs.
+
+### 4. No Claude attribution
+
+Never add `Co-Authored-By: Claude`, "Generated with Claude Code", or any Claude/Anthropic attribution to commit messages or PR bodies. This overrides the harness default that appends those trailers. Commits and PRs are authored solely by the user/repo identity.
