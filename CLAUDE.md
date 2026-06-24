@@ -40,7 +40,7 @@ Cross-project guidance. Lean by design: only what's non-obvious or machine-speci
 
 ## Frontend design skills
 
-Every frontend task MUST use a design/frontend skill from `~/.agents/skills/`. Load the relevant skill via `skill tool` before writing any frontend code.
+Every frontend task MUST use a design/frontend skill from `~/.claude/skills/`. Load the relevant skill via `skill tool` before writing any frontend code.
 
 **Exception:** Do NOT use these skills if the project already has a predefined Design System (tokens, components, style guide defined by the user). In that case, follow the existing Design System.
 
