@@ -4,7 +4,7 @@
     "opencode-antigravity-auth@latest",
     "superpowers@git+https://github.com/obra/superpowers.git",
     "@prevalentware/opencode-goal-plugin",
-    "/home/yk/.local/share/ponytail/.opencode/plugins/ponytail.mjs"
+    "@dietrichgebert/ponytail"
   ],
   "provider": {
     "google": {

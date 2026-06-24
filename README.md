@@ -77,7 +77,7 @@ Set up my coding-agent harness from https://github.com/YuukiFST/my-harness-confi
 3. Binaries from the "Install reference" table: rtk, no-mistakes, code-review-graph. Then enable rtk for OpenCode: `rtk init -g --opencode`.
 4. Plugins for OpenCode parity with my Claude setup:
    - caveman: `npx -y github:JuliusBrussee/caveman -- --only opencode`
-   - ponytail: `git clone https://github.com/DietrichGebert/ponytail.git` to a local dir, then point opencode.jsonc at <dir>/.opencode/plugins/ponytail.mjs.
+   - ponytail: already referenced in opencode.jsonc as the npm package `@dietrichgebert/ponytail` — OpenCode resolves it on launch, no clone needed.
    - superpowers is already referenced in opencode.jsonc.
 5. MCP servers in opencode.jsonc (already present — just make them resolve): code-review-graph (path to the installed binary + `serve`); fff (install the fff-mcp binary for my OS, verify sha256; binary dir on PATH so `fff-mcp` resolves, or use its absolute path); playwright (add an MCP entry running `npx -y @playwright/mcp@latest`).
 6. Do NOT touch Claude Code config (~/.claude). List what was installed and tell me to restart OpenCode.
