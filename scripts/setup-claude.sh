@@ -37,5 +37,14 @@ claude plugin install ponytail@ponytail || true
 claude plugin install superpowers@claude-plugins-official || true
 claude plugin install goal-ledger@goal-ledger || true
 
+echo "Settings (disable auto memory)"
+python3 - "$claude/settings.json" <<'PY'
+import json, os, sys
+p = sys.argv[1]
+s = json.load(open(p, encoding="utf-8")) if os.path.exists(p) else {}
+s.setdefault("env", {})["CLAUDE_CODE_DISABLE_AUTO_MEMORY"] = "1"
+json.dump(s, open(p, "w", encoding="utf-8"), indent=2)
+PY
+
 case ":$PATH:" in *":$bin:"*) ;; *) echo "Note: add $bin to PATH";; esac
 echo "Done. Restart Claude Code."

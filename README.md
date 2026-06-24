@@ -64,7 +64,9 @@ bash scripts/setup-claude.sh            # macOS / Linux
 Installs to `~/.claude`: copies `CLAUDE.md` + `skills/`; installs rtk (+`rtk init
 -g` hook), no-mistakes, code-review-graph, fff; registers the code-review-graph,
 fff and playwright MCP servers; installs the caveman, ponytail, superpowers and
-goal-ledger plugins.
+goal-ledger plugins; sets `env.CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` in
+`settings.json` (auto-memory off — stale Claude-only memory degrades decisions;
+keep durable context in `CLAUDE.md`/`AGENTS.md` instead).
 
 ### OpenCode (Linux / macOS)
 

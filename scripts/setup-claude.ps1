@@ -49,4 +49,13 @@ claude plugin install ponytail@ponytail
 claude plugin install superpowers@claude-plugins-official
 claude plugin install goal-ledger@goal-ledger
 
+Write-Host "Settings (disable auto memory)"
+@'
+import json, os, sys
+p = sys.argv[1]
+s = json.load(open(p, encoding="utf-8")) if os.path.exists(p) else {}
+s.setdefault("env", {})["CLAUDE_CODE_DISABLE_AUTO_MEMORY"] = "1"
+json.dump(s, open(p, "w", encoding="utf-8"), indent=2)
+'@ | python - "$Claude\settings.json"
+
 Write-Host "Done. Restart Claude Code."
