@@ -45,44 +45,42 @@ not by directory.
 | **Research & learning** | `storm-research` (Stanford STORM multi-perspective research), `teach` (teach a concept in-workspace), `prototype` (throwaway prototype to flesh out a design) |
 | **System config** | `omarchy` (Linux desktop / window-manager / dotfile customization) |
 
-## Copy-paste setup
-
-Paste the block for your agent as your first message. It installs **only** what
-applies to that platform, detects your OS, and verifies downloads before running.
+## Setup
 
 Both agents get the **same** toolset (rtk, caveman, superpowers, ponytail,
 code-review-graph, fff, playwright-mcp, no-mistakes, goal mode); only the
-install mechanism differs per platform.
+install mechanism differs per platform. Run the script for your agent from a
+clone of this repo — it installs binaries, registers MCP servers, wires
+plugins, and copies config. Idempotent: safe to re-run.
 
 ### Claude Code
 
-```text
-Set up my coding-agent harness from https://github.com/YuukiFST/my-harness-config for Claude Code on THIS machine. Detect my OS and use matching commands. Review before running — this clones a repo, downloads binaries, and edits ~/.claude.
-
-1. Clone the repo to a temp dir and read README.md.
-2. Copy CLAUDE.md -> ~/.claude/CLAUDE.md and skills/* -> ~/.claude/skills/. Merge settings.json into ~/.claude/settings.json (keep my existing keys; add the rtk PreToolUse hook + enabledPlugins/marketplaces: caveman, superpowers, ponytail).
-3. Binaries from the "Install reference" table: rtk then `rtk init -g`, no-mistakes, code-review-graph. On Windows install to a dir on PATH, not ~/.local/bin.
-4. MCP servers (register via `claude mcp add -s user <name> -- <cmd>`): code-review-graph (the installed binary, arg `serve`); fff (install the fff-mcp binary for my OS, verify sha256, then register it); playwright (`claude mcp add playwright -s user -- npx -y @playwright/mcp@latest`).
-5. goal mode (parity with OpenCode's goal plugin): install the goal-ledger plugin from https://github.com/kingbootoshi/goal-ledger (it provides `/goal`).
-6. Do NOT touch OpenCode config. List what was installed and tell me to restart Claude Code.
+```bash
+git clone https://github.com/YuukiFST/my-harness-config && cd my-harness-config
+pwsh -File scripts/setup-claude.ps1     # Windows
+bash scripts/setup-claude.sh            # macOS / Linux
 ```
 
-### OpenCode
+Installs to `~/.claude`: copies `CLAUDE.md` + `skills/`; installs rtk (+`rtk init
+-g` hook), no-mistakes, code-review-graph, fff; registers the code-review-graph,
+fff and playwright MCP servers; installs the caveman, ponytail, superpowers and
+goal-ledger plugins.
 
-```text
-Set up my coding-agent harness from https://github.com/YuukiFST/my-harness-config for OpenCode on THIS machine. Detect my OS and use matching commands. Review before running — this clones a repo, downloads binaries, and edits ~/.config/opencode.
+### OpenCode (Linux / macOS)
 
-1. Clone the repo to a temp dir and read README.md.
-2. Copy opencode.jsonc -> ~/.config/opencode/opencode.jsonc. It still has one author-absolute path (the code-review-graph command, /home/yk/...) — rewrite it for MY home dir and OS.
-3. Copy skills/* -> ~/.config/opencode/skills/. OpenCode auto-discovers that global dir (no skills.paths config needed); this keeps OpenCode out of ~/.claude.
-4. Binaries from the "Install reference" table: rtk, no-mistakes, code-review-graph. Then enable rtk for OpenCode: `rtk init -g --opencode`.
-5. Plugins for OpenCode parity with my Claude setup:
-   - caveman: `npx -y github:JuliusBrussee/caveman -- --only opencode`
-   - ponytail: already referenced in opencode.jsonc as the npm package `@dietrichgebert/ponytail` — OpenCode resolves it on launch, no clone needed.
-   - superpowers is already referenced in opencode.jsonc.
-6. MCP servers in opencode.jsonc (already present — just make them resolve): code-review-graph (path to the installed binary + `serve`); fff (install the fff-mcp binary for my OS, verify sha256; binary dir on PATH so `fff-mcp` resolves, or use its absolute path); playwright (add an MCP entry running `npx -y @playwright/mcp@latest`).
-7. Do NOT touch Claude Code config (~/.claude). List what was installed and tell me to restart OpenCode.
+```bash
+git clone https://github.com/YuukiFST/my-harness-config && cd my-harness-config
+bash scripts/setup-opencode.sh
 ```
+
+Installs to `~/.config/opencode`: copies `opencode.jsonc` + `skills/` (auto-
+discovered, no `skills.paths` needed); installs rtk (+`rtk init -g --opencode`),
+no-mistakes, code-review-graph (symlinked onto PATH so the bare MCP command
+resolves), fff; installs the caveman plugin. ponytail (`@dietrichgebert/ponytail`)
+and superpowers are referenced in `opencode.jsonc` and resolve on launch.
+
+After the script finishes, **restart the agent**. Then, in each repo you push
+from, run `no-mistakes init` once to create the `no-mistakes` push remote.
 
 
 ## Install reference

@@ -211,7 +211,7 @@
   "mcp": {
     "code-review-graph": {
       "type": "local",
-      "command": ["/home/yk/.local/share/crg-venv/bin/code-review-graph", "serve"],
+      "command": ["code-review-graph", "serve"],
       "enabled": true
     },
     // fff fast file-search MCP — bare name relies on install dir being on PATH
