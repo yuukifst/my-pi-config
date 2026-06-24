@@ -132,6 +132,45 @@ Report the rough ratio and name the biggest filler blocks.
   softening to a rule-with-reason — but only flag, don't rewrite the user's
   hard-won rules without asking.
 
+## Mechanical validity checks (claudelint family)
+
+Beyond the judgment scores above, run these objective checks on the file and its
+whole import tree. They are pass/fail, not matters of taste — report each failure
+verbatim with the offending path. **Error** = breaks loading or silently drops
+content; **Warning** = works but fragile or hard to navigate. Resolve every
+`@import` and follow the full tree before checking.
+
+**Broken / silently-dropped content (Error):**
+- *File missing* — the audited CLAUDE.md / AGENTS.md / GEMINI.md path doesn't exist; nothing else can run.
+- *Import missing* — an `@import` target doesn't exist on disk (typo, renamed, deleted). Content is silently skipped.
+- *Import unreadable* — target exists but can't be read (permissions, it's a directory, binary). Distinct from missing.
+- *Import inside a code block* — an `@import` inside a ``` or `~~~` fence is literal text, never resolved. Flag unless it's clearly documenting import syntax.
+- *Circular import* — file A imports B imports A, or a file imports itself.
+- *Circular symlink* — an imported path is a symlink chain resolving back to itself.
+- *Import depth exceeded* — nesting deeper than 5 levels (A→B→C→D→E→F). Usually an accidental cycle; flatten by importing directly from the root.
+- *Filename case clash* — two imports differ only in case (`Git.md` vs `git.md`): same file on macOS/Windows, distinct on Linux. Use one lowercase-hyphen convention.
+
+**Stale references (extends the "Stale facts" cross-cutting check):**
+- *Invalid file reference* — a path in inline backticks or a bash/shell block that doesn't exist (skip URLs, globs, template vars, version strings). The instruction points the agent at a non-existent file.
+- *npm script not found* — `npm run <script>` for a script absent from the nearest `package.json` `scripts`. Monorepo caveat: it may live in a different `package.json` than the nearest — confirm before flagging.
+
+**Frontmatter `paths` in `.claude/rules/*` sub-files (Warning):**
+- *Malformed paths* — `paths` must be a non-empty YAML array of non-empty strings; a bare string or `[]` is invalid. Absent `paths` is fine (optional).
+- *Backslash glob* — patterns must use `/`, never `\` (backslash is a glob escape char, breaks on macOS/Linux): `src\components\**\*.tsx` → `src/components/**/*.tsx`.
+- *Glob too broad* — bare `**` or `*` matches every file, defeating a scoped rule. Narrow it (`src/**/*.ts`); if it truly applies everywhere, the content belongs in the root CLAUDE.md.
+
+**Size / structure thresholds (Warning — hierarchy triggers, NOT length penalties):**
+- *Too many sections* — > 40 markdown headings in a top-level CLAUDE.md (sub-files under `.claude/rules/` excluded).
+- *File too big* — ≥ 40 KB (Claude Code's own degraded-performance threshold).
+
+Both fire the same fix, which is this skill's king move: **split into
+topic-specific `.claude/rules/*.md` and pull them in with `@import` (Hierarchy,
+§3) — never delete domain knowledge to drop under a threshold.** A dense file
+crossing 40 KB is split, not gutted. These two numbers mark the point to *apply
+hierarchy*, fully consistent with "don't penalize length alone" below: large-but-
+dense behind a conditional pointer is healthy; the same content inlined into the
+always-loaded root is wasteful.
+
 ## What NOT to penalize
 
 - Length alone, if the content is dense domain knowledge. A long, specific,

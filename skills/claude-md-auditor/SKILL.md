@@ -75,8 +75,11 @@ root.
 Read each target file (and its imports). For each, capture:
 
 - Total line count and effective size (root + all imported/referenced files)
+- Heading count (top-level file only) and total size in KB
 - Whether content is monolithic (everything always loaded) or hierarchical
   (conditional pointers to sub-files)
+- Walk the full `@import` tree: note any import that is missing, unreadable,
+  circular, too deeply nested, case-clashing, or sits inside a code fence
 
 ## Step 3 — Audit against the rubric
 
@@ -84,6 +87,11 @@ Read `references/rubric.md` and score the file on each dimension. The rubric has
 the full criteria, examples of good vs bad lines, and how to tell
 genuinely-valuable content from filler. Do not summarize the rubric back to the
 user — apply it.
+
+Also run the rubric's **Mechanical validity checks (claudelint family)** —
+objective pass/fail checks on the import tree, file references, npm scripts, glob
+frontmatter, and the size/heading thresholds. These feed the Validity block of
+the report, separate from the judgment scores.
 
 ## Step 4 — Report
 
@@ -101,6 +109,12 @@ Use this exact structure:
 - Overviews:    <none | present>     — <codebase maps / dir trees / enumerations: paper shows they don't help>
 - Hierarchy:    <good | monolithic>  — <always-loaded surface vs conditional sub-files>
 - Signal:       <high | diluted>     — <ratio of non-derivable domain knowledge to filler>
+
+## Validity (objective — claudelint family; omit clean lines)
+- [Error]   <broken/missing/circular/unreadable import, file ref, or npm script> — <offending path>
+- [Warning] <bad glob, malformed paths, case clash, import-in-code-block>        — <offending path>
+- [Warning] <size ≥40KB or >40 headings> — split into .claude/rules/*.md via @import (hierarchy), do not delete
+<If everything passes: "All mechanical checks pass.">
 
 ## Cut these (no payoff / model already knows / derivable from repo)
 - <quote line or section> — <why it adds overhead without value>
