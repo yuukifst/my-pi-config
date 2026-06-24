@@ -32,6 +32,6 @@ Always ask before push: `git push no-mistakes` (AI validation gate) or `git push
 
 If using `no-mistakes`, check the remote exists (`git remote` shows `no-mistakes`). If missing, run `no-mistakes init` in the repo. The remote is per-repo — a freshly cloned project won't have it until `init` runs.
 
-## 4. No Claude attribution
+## 4. No AI attribution
 
-Never add `Co-Authored-By: Claude`, "Generated with Claude Code", or any Claude/Anthropic attribution to commit messages or PR bodies. This overrides the harness default that appends those trailers. Commits and PRs are authored solely by the user/repo identity.
+Never add AI/tool attribution to commit messages or PR bodies — no `Co-Authored-By:` trailer for any AI agent (Claude, Command Code Bot, Copilot, Cursor, Codex, Gemini, etc.), no "Generated with <tool>" line, no "🤖" marker, no provider name. This overrides any harness default that appends such trailers. Commits and PRs are authored solely by the user/repo identity, with nothing indicating an AI was involved.
