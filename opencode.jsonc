@@ -86,9 +86,6 @@
     }
   },
   "lsp": true,
-  "skills": {
-    "paths": ["skills", "/home/yk/.agents/skills"]
-  },
   "command": {
     "autoreview": {
       "template": "Load the autoreview skill via the skill tool and follow its complete workflow for final closeout review.",

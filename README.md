@@ -73,14 +73,15 @@ Set up my coding-agent harness from https://github.com/YuukiFST/my-harness-confi
 Set up my coding-agent harness from https://github.com/YuukiFST/my-harness-config for OpenCode on THIS machine. Detect my OS and use matching commands. Review before running — this clones a repo, downloads binaries, and edits ~/.config/opencode.
 
 1. Clone the repo to a temp dir and read README.md.
-2. Copy opencode.jsonc -> ~/.config/opencode/opencode.jsonc. It uses the author's absolute Linux paths (/home/yk/...) — rewrite every absolute path (ponytail plugin, code-review-graph command, skills path) for MY home dir and OS.
-3. Binaries from the "Install reference" table: rtk, no-mistakes, code-review-graph. Then enable rtk for OpenCode: `rtk init -g --opencode`.
-4. Plugins for OpenCode parity with my Claude setup:
+2. Copy opencode.jsonc -> ~/.config/opencode/opencode.jsonc. It still has one author-absolute path (the code-review-graph command, /home/yk/...) — rewrite it for MY home dir and OS.
+3. Copy skills/* -> ~/.config/opencode/skills/. OpenCode auto-discovers that global dir (no skills.paths config needed); this keeps OpenCode out of ~/.claude.
+4. Binaries from the "Install reference" table: rtk, no-mistakes, code-review-graph. Then enable rtk for OpenCode: `rtk init -g --opencode`.
+5. Plugins for OpenCode parity with my Claude setup:
    - caveman: `npx -y github:JuliusBrussee/caveman -- --only opencode`
    - ponytail: already referenced in opencode.jsonc as the npm package `@dietrichgebert/ponytail` — OpenCode resolves it on launch, no clone needed.
    - superpowers is already referenced in opencode.jsonc.
-5. MCP servers in opencode.jsonc (already present — just make them resolve): code-review-graph (path to the installed binary + `serve`); fff (install the fff-mcp binary for my OS, verify sha256; binary dir on PATH so `fff-mcp` resolves, or use its absolute path); playwright (add an MCP entry running `npx -y @playwright/mcp@latest`).
-6. Do NOT touch Claude Code config (~/.claude). List what was installed and tell me to restart OpenCode.
+6. MCP servers in opencode.jsonc (already present — just make them resolve): code-review-graph (path to the installed binary + `serve`); fff (install the fff-mcp binary for my OS, verify sha256; binary dir on PATH so `fff-mcp` resolves, or use its absolute path); playwright (add an MCP entry running `npx -y @playwright/mcp@latest`).
+7. Do NOT touch Claude Code config (~/.claude). List what was installed and tell me to restart OpenCode.
 ```
 
 
