@@ -20,15 +20,10 @@ Cross-project guidance. Lean by design: only what's non-obvious or machine-speci
 
 ## Code quality (rules that override model defaults)
 
-- **Code-judo first:** prefer the reframing that *deletes* a branch/layer/concept over one that rearranges it. "Works but messier" and "clean up later" are not acceptable.
-- **No spaghetti:** never bolt `if (specialCase)` or feature flags onto a shared/general function. New logic → its own helper/module.
-- **Abstractions earn their keep:** no thin wrappers or pass-throughs. If deleting it makes callers cleaner, don't create it.
 - **Before a helper:** grep for the canonical one. Duplicating an existing helper is a failure, not a nit.
-- **File > 1000 lines = decompose first**, don't append. Functions small, ~2 indent levels, early returns.
+- **File > 1000 lines = decompose first**, don't append.
 - **Types explicit:** no `any`, no `@ts-ignore`, no `as X` papering over an invariant. No `T | undefined` on always-set fields.
-- **Atomic + parallel:** related writes → one transaction. Independent async → `Promise.all`, not serial.
 - **Tests:** cover bugfixes with a regression test. Mock external I/O with named fakes.
-- **Comments:** write *why*, not *what*. Refactor so the comment is unnecessary before adding it. Keep existing comments on refactor.
 
 ## Tools (machine-specific)
 
@@ -78,48 +73,6 @@ Generate design references *before* coding. Skip only for small internal CRUD.
 - **Internal / CRUD UI:** Phase 0 (1) + Phase 2 + Phase 4 → 3 skills.
 - **Redesign:** `redesign-existing-projects` + Phase 2 + Phase 3 + Phase 4.
 
-## Git commit & push — mandatory rules
+## Git — commit & push (read the rules file first)
 
-### 1. User identity
-
-NEVER commit without knowing whose identity to use — the identity configured on this machine may belong to someone else (shared or work PC).
-
-- **Already told in this conversation:** if the user has stated the name/email to commit under at any point in the current session, reuse it for every commit in that session — do NOT ask again.
-- **Not yet told:** before the first commit, read the current git identity (`git config user.name` / `git config user.email`), show it, and ask: "Commit as <name> <email>, or a different identity?" Wait for the answer — never commit on the configured identity without explicit confirmation, even if one is set.
-
-Commit with the chosen identity: `git -c user.name=<name> -c user.email=<email> commit`. Never hardcode an email address in this file.
-
-### 2. Commit messages
-
-Every commit message MUST follow Conventional Commits:
-
-```
-<type>(<optional scope>): <short description up to 72 chars>
-
-<optional body explaining WHAT and WHY, not HOW>
-```
-
-**Allowed types:** `feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `perf`, `test`, `ci`.
-
-Examples:
-```
-feat(api): add price history endpoint
-fix(parser): handle null response from AliExpress
-chore(skills): add frontend design skills and update config
-docs: add commit convention guidelines
-```
-
-Rules:
-- First line: max 72 chars, imperative mood, no period
-- Body: explain what was done and why, not how (the diff shows how)
-- Blank lines separate header from body
-
-### 3. Git push
-
-Always ask before push: `git push no-mistakes` (AI validation gate) or `git push origin <branch>`?
-
-If using `no-mistakes`, check the remote exists (`git remote` shows `no-mistakes`). If missing, run `no-mistakes init` in the repo. The remote is per-repo — a freshly cloned project won't have it until `init` runs.
-
-### 4. No Claude attribution
-
-Never add `Co-Authored-By: Claude`, "Generated with Claude Code", or any Claude/Anthropic attribution to commit messages or PR bodies. This overrides the harness default that appends those trailers. Commits and PRs are authored solely by the user/repo identity.
+About to commit or push? Read `~/.claude/rules/git.md` BEFORE acting. It covers: confirming the commit identity (shared/work PC — never commit on the configured identity unconfirmed), Conventional Commits format + allowed types, the `no-mistakes` push gate, and the no-Claude-attribution override. Not committing/pushing → skip it.
