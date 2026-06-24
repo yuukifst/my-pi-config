@@ -64,13 +64,12 @@ Available frontend/design skills:
 
 ### 1. User identity
 
-NEVER commit without confirming the author first — the identity configured on this machine may belong to someone else (shared or work PC). Before EVERY commit:
+NEVER commit without knowing whose identity to use — the identity configured on this machine may belong to someone else (shared or work PC).
 
-1. Read the current git identity: `git config user.name` / `git config user.email`.
-2. Show it and ask: "Commit as <name> <email>, or a different identity?" Wait for the answer — never commit on the configured identity without explicit confirmation, even if one is set.
-3. Commit with the chosen identity: `git -c user.name=<name> -c user.email=<email> commit`.
+- **Already told in this conversation:** if the user has stated the name/email to commit under at any point in the current session, reuse it for every commit in that session — do NOT ask again.
+- **Not yet told:** before the first commit, read the current git identity (`git config user.name` / `git config user.email`), show it, and ask: "Commit as <name> <email>, or a different identity?" Wait for the answer — never commit on the configured identity without explicit confirmation, even if one is set.
 
-Never hardcode an email address in this file.
+Commit with the chosen identity: `git -c user.name=<name> -c user.email=<email> commit`. Never hardcode an email address in this file.
 
 ### 2. Commit messages
 
