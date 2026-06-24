@@ -87,7 +87,7 @@
   },
   "lsp": true,
   "skills": {
-    "paths": ["/home/yk/.agents/skills"]
+    "paths": ["skills", "/home/yk/.agents/skills"]
   },
   "command": {
     "autoreview": {
