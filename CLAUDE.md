@@ -64,9 +64,13 @@ Available frontend/design skills:
 
 ### 1. User identity
 
-Commits on this machine are authored by the git identity already configured in `git config --global` (set once per machine — never hardcode the address here). Verify before committing with `git config user.name` / `git config user.email`; if either is unset, ask the user.
+NEVER commit without confirming the author first — the identity configured on this machine may belong to someone else (shared or work PC). Before EVERY commit:
 
-Use the configured identity by default. Only pass `git -c user.name=<name> -c user.email=<email> commit` to override it for a specific commit.
+1. Read the current git identity: `git config user.name` / `git config user.email`.
+2. Show it and ask: "Commit as <name> <email>, or a different identity?" Wait for the answer — never commit on the configured identity without explicit confirmation, even if one is set.
+3. Commit with the chosen identity: `git -c user.name=<name> -c user.email=<email> commit`.
+
+Never hardcode an email address in this file.
 
 ### 2. Commit messages
 
