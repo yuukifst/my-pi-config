@@ -28,7 +28,7 @@ Everything below exists to serve one of those goals.
 
 | Tool | Why I use it | How it's wired |
 |------|--------------|----------------|
-| [playwright-mcp](https://github.com/microsoft/playwright-mcp) | The agent drives a real browser to verify things actually work end-to-end — navigate, click, fill, assert via structured a11y snapshots. Official Microsoft server; multi-browser (Chromium/Firefox/WebKit) + headless. Replaced chrome-devtools-axi. | MCP server `playwright` (`npx -y @playwright/mcp@latest`), user scope. |
+| [agent-browser](https://agent-browser.dev) | The agent drives a real browser to verify things actually work end-to-end — navigate, click, fill, assert via ref-based accessibility snapshots. Native Rust, ~10x fewer tokens than Playwright MCP. Vercel Labs (37k stars). | MCP server `agent-browser` (`agent-browser mcp`), user scope. |
 
 ## Skills
 
@@ -48,7 +48,7 @@ not by directory.
 ## Setup
 
 Both agents get the **same** toolset (rtk, caveman, superpowers, ponytail,
-code-review-graph, fff, playwright-mcp, no-mistakes, goal mode); only the
+code-review-graph, fff, agent-browser, no-mistakes, goal mode); only the
 install mechanism differs per platform. Run the script for your agent from a
 clone of this repo — it installs binaries, registers MCP servers, wires
 plugins, and copies config. Idempotent: safe to re-run.
@@ -63,7 +63,7 @@ bash scripts/setup-claude.sh            # macOS / Linux
 
 Installs to `~/.claude`: copies `CLAUDE.md` + `skills/`; installs rtk (+`rtk init
 -g` hook), no-mistakes, code-review-graph, fff; registers the code-review-graph,
-fff and playwright MCP servers; installs the caveman, ponytail, superpowers and
+fff and agent-browser MCP servers; installs the caveman, ponytail, superpowers and
 goal-ledger plugins; sets `env.CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` in
 `settings.json` (auto-memory off — stale Claude-only memory degrades decisions;
 keep durable context in `CLAUDE.md`/`AGENTS.md` instead).
@@ -78,8 +78,9 @@ bash scripts/setup-opencode.sh
 Installs to `~/.config/opencode`: copies `opencode.jsonc` + `skills/` (auto-
 discovered, no `skills.paths` needed); installs rtk (+`rtk init -g --opencode`),
 no-mistakes, code-review-graph (symlinked onto PATH so the bare MCP command
-resolves), fff; installs the caveman plugin. ponytail (`@dietrichgebert/ponytail`)
-and superpowers are referenced in `opencode.jsonc` and resolve on launch.
+resolves), fff, agent-browser; installs the caveman plugin. ponytail
+(`@dietrichgebert/ponytail`) and superpowers are referenced in `opencode.jsonc`
+and resolve on launch.
 
 After the script finishes, **restart the agent**. Then, in each repo you push
 from, run `no-mistakes init` once to create the `no-mistakes` push remote.
@@ -94,5 +95,6 @@ from, run `no-mistakes init` once to create the `no-mistakes` push remote.
 | code-review-graph | `python3 -m venv ~/.local/crg-venv && ~/.local/crg-venv/bin/pip install code-review-graph` (expose `code-review-graph` on PATH) |
 | fff (Windows) | `irm https://raw.githubusercontent.com/dmtrKovalenko/fff.nvim/main/install-mcp.ps1 \| iex` → `%LOCALAPPDATA%\fff-mcp\bin\fff-mcp.exe` |
 | fff (macOS/Linux) | `curl -L https://dmtrkovalenko.dev/install-fff-mcp.sh \| bash` |
+| agent-browser | `npm install -g agent-browser && agent-browser install` |
 
 > rtk corrupts `prisma`/`tsc`/`vitest` output — run those raw, never through rtk.

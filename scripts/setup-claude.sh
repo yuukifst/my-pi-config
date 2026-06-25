@@ -23,10 +23,10 @@ python3 -m venv "$crg"
 curl -fsSL https://dmtrkovalenko.dev/install-fff-mcp.sh | bash
 
 echo "[4/5] MCP servers"
-for n in code-review-graph fff playwright; do claude mcp remove "$n" -s user 2>/dev/null || true; done
+for n in code-review-graph fff agent-browser; do claude mcp remove "$n" -s user 2>/dev/null || true; done
 claude mcp add code-review-graph -s user -- "$crg/bin/code-review-graph" serve
 claude mcp add fff -s user -- fff-mcp
-claude mcp add playwright -s user -- npx -y @playwright/mcp@latest
+claude mcp add agent-browser -s user -- agent-browser mcp
 
 echo "[5/5] Plugins"
 for m in JuliusBrussee/caveman DietrichGebert/ponytail anthropics/claude-plugins-official kingbootoshi/goal-ledger; do
