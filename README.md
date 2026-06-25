@@ -1,40 +1,39 @@
 # my-harness-config
 
-My global config for **Claude Code** and **OpenCode** — tuned for three things:
-spend fewer tokens, write better code, and verify it actually works.
-Everything below exists to serve one of those goals.
+My global config for **Claude Code** and **OpenCode** — spend fewer tokens, write
+better code, verify it works.
 
-## Why each tool, and how it's wired
+## Tools
 
 ### Token economy
 
-| Tool | Why I use it | How it's wired |
-|------|--------------|----------------|
-| [rtk](https://github.com/rtk-ai/rtk) | Compresses shell output before it hits the model (60–90% fewer tokens) — a 200-line test fail becomes ~20 lines. | Hook that auto-rewrites every shell command (both agents). Never prefix manually. Corrupts `prisma`/`tsc`/`vitest` output → run those outside the hook. |
-| [caveman](https://github.com/JuliusBrussee/caveman) | Compresses the agent's *replies* ~75% (drops filler, keeps the technical content). | Plugin, always-on every session (both agents). |
-| [fff](https://github.com/dmtrKovalenko/fff) | In-memory, frecency-ranked file search — faster and cheaper than spawning ripgrep/fzf per call. | MCP server `fff` (`ffgrep`/`fffind`/`fff-multi-grep`). `CLAUDE.md` tells the agent to prefer it. |
-| [code-review-graph](https://github.com/tirth8205/code-review-graph) | Tree-sitter graph that feeds the agent only the blast-radius of a change — ~82× fewer tokens than reading the whole repo. | MCP server. `CLAUDE.md` tells the agent to use it before raw Grep/Glob. |
+| Tool | Why | How |
+|------|-----|-----|
+| [rtk](https://github.com/rtk-ai/rtk) | Compresses shell output 60–90% before the model sees it. | Hook auto-wraps every shell command. Corrupts `prisma`/`tsc`/`vitest` → run those raw. |
+| [caveman](https://github.com/JuliusBrussee/caveman) | Compresses agent replies ~75%. | Plugin, always-on (both agents). |
+| [fff](https://github.com/dmtrKovalenko/fff) | In-memory file search — cheaper than spawning ripgrep per call. | MCP server, agent prefers it over raw Grep/Glob. |
+| [code-review-graph](https://github.com/tirth8205/code-review-graph) | Feeds the agent only the blast-radius of a change — ~82× fewer tokens. | MCP server, agent prefers it over raw Grep/Glob. |
 
 ### Code quality
 
-| Tool | Why I use it | How it's wired |
-|------|--------------|----------------|
-| [ponytail](https://github.com/DietrichGebert/ponytail) | Forces the laziest-senior-dev discipline: stdlib/native before custom code → 80–94% less code. | Plugin (both agents). |
-| [no-mistakes](https://github.com/kunchenguid/no-mistakes) | Validation gate on push — runs review/test/lint on a throwaway worktree, auto-fixes slop, opens the PR only when green. | `git push no-mistakes` instead of `git push origin`. `CLAUDE.md` makes me pick the gate each push. |
+| Tool | Why | How |
+|------|-----|-----|
+| [ponytail](https://github.com/DietrichGebert/ponytail) | Stdlib/native first → 80–94% less code. | Plugin (both agents). |
+| [no-mistakes](https://github.com/kunchenguid/no-mistakes) | Validation gate on push — review/test/lint on throwaway worktree, opens PR only when green. | `git push no-mistakes` instead of `git push origin`. |
 | [superpowers](https://github.com/obra/superpowers) | Discipline skills (brainstorming, debugging, planning, verification) that gate *how* the agent works. | Plugin (both agents). |
-| code-quality skills | `/thermo-nuclear-code-quality-review` (max-intensity quality audit), `/improve` (advisor audit → read-only plans), `/improve-codebase-architecture` (architecture refactor planning). | Copied into the agent's skills dir (`skills/`). |
+| code-quality skills | Max-intensity audit, advisor audit, architecture planning. | `thermo-nuclear..`, `improve`, `improve-codebase-architecture` in `skills/`. |
 
 ### Verification / E2E
 
-| Tool | Why I use it | How it's wired |
-|------|--------------|----------------|
-| [agent-browser](https://agent-browser.dev) | The agent drives a real browser to verify things actually work end-to-end — navigate, click, fill, assert via ref-based accessibility snapshots. Native Rust, ~10x fewer tokens than Playwright MCP. Vercel Labs (37k stars). | MCP server `agent-browser` (`agent-browser mcp`), user scope. |
+| Tool | Why | How |
+|------|-----|-----|
+| [agent-browser](https://agent-browser.dev) | Drives a real browser E2E — navigate, click, fill, assert via ref-based snapshots. ~10x fewer tokens than Playwright MCP. | MCP server (`agent-browser mcp`). |
 
 ### Development workflow
 
-| Tool | Why I use it | How it's wired |
-|------|--------------|----------------|
-| [portless](https://portless.sh) | Replaces port numbers with stable, named `.localhost` URLs — agents reference `https://myapp.localhost` instead of guessing ports. Auto-HTTPS, git worktree subdomains. Vercel Labs (9.9k stars). | `npm install -g portless`. Prefix any dev command: `portless myapp next dev`. |
+| Tool | Why | How |
+|------|-----|-----|
+| [portless](https://portless.sh) | Named `.localhost` URLs — agents reference stable hostnames instead of guessing ports. Auto-HTTPS, git worktree subdomains. | `npm install -g portless`. Prefix any dev command. |
 
 ## Skills
 
