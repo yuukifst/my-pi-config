@@ -16,18 +16,19 @@ echo "[2/5] rtk"
 curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
 rtk init -g
 
-echo "[3/5] no-mistakes + code-review-graph + fff + portless"
+echo "[3/5] no-mistakes + code-review-graph + fff + portless + agent-browser"
 curl -fsSL https://raw.githubusercontent.com/kunchenguid/no-mistakes/main/docs/install.sh | sh
 python3 -m venv "$crg"
 "$crg/bin/pip" install -q --upgrade pip code-review-graph
 curl -fsSL https://dmtrkovalenko.dev/install-fff-mcp.sh | bash
-npm install -g portless
+npm install -g portless agent-browser
 
 echo "[4/5] MCP servers"
+# agent-browser (agent-browser.dev) is a shell CLI for agents, NOT an MCP server — installed
+# above and called directly via Bash. Kept in the remove loop only to clean any stale entry.
 for n in code-review-graph fff agent-browser; do claude mcp remove "$n" -s user 2>/dev/null || true; done
 claude mcp add code-review-graph -s user -- "$crg/bin/code-review-graph" serve
 claude mcp add fff -s user -- fff-mcp
-claude mcp add agent-browser -s user -- agent-browser mcp
 
 echo "[5/5] Plugins"
 for m in JuliusBrussee/caveman DietrichGebert/ponytail anthropics/claude-plugins-official kingbootoshi/goal-ledger; do
