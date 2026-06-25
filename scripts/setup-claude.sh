@@ -16,11 +16,12 @@ echo "[2/5] rtk"
 curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
 rtk init -g
 
-echo "[3/5] no-mistakes + code-review-graph + fff"
+echo "[3/5] no-mistakes + code-review-graph + fff + portless"
 curl -fsSL https://raw.githubusercontent.com/kunchenguid/no-mistakes/main/docs/install.sh | sh
 python3 -m venv "$crg"
 "$crg/bin/pip" install -q --upgrade pip code-review-graph
 curl -fsSL https://dmtrkovalenko.dev/install-fff-mcp.sh | bash
+npm install -g portless
 
 echo "[4/5] MCP servers"
 for n in code-review-graph fff agent-browser; do claude mcp remove "$n" -s user 2>/dev/null || true; done
