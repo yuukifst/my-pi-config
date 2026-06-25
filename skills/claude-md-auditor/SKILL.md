@@ -72,14 +72,28 @@ root.
 
 ## Step 2 — Read and measure
 
-Read each target file (and its imports). For each, capture:
+**First run the mechanical validator** (it does the deterministic walk for you —
+don't hand-resolve the import tree):
+
+```
+node scripts/claudelint.js <path-to-context-file>
+```
+
+It prints the Validity block directly: `[Error]`/`[Warning]` lines or "All
+mechanical checks pass." It walks the full `@import` tree (missing / unreadable /
+circular / depth / case-clash, fenced imports ignored), checks `npm run` scripts
+against the nearest `package.json`, validates `paths:` frontmatter in
+`.claude/rules/*`, suffix-matches prose file refs across the repo, and flags
+size ≥ 40 KB / > 40 headings. Add `--json` for machine-readable output; exit
+code is 1 if any Error. Paste its findings into the report's Validity block
+verbatim — do not re-derive them by hand.
+
+Then read each target file (and its imports) for the judgment scores. Capture:
 
 - Total line count and effective size (root + all imported/referenced files)
 - Heading count (top-level file only) and total size in KB
 - Whether content is monolithic (everything always loaded) or hierarchical
   (conditional pointers to sub-files)
-- Walk the full `@import` tree: note any import that is missing, unreadable,
-  circular, too deeply nested, case-clashing, or sits inside a code fence
 
 ## Step 3 — Audit against the rubric
 
@@ -88,10 +102,10 @@ the full criteria, examples of good vs bad lines, and how to tell
 genuinely-valuable content from filler. Do not summarize the rubric back to the
 user — apply it.
 
-Also run the rubric's **Mechanical validity checks (claudelint family)** —
-objective pass/fail checks on the import tree, file references, npm scripts, glob
-frontmatter, and the size/heading thresholds. These feed the Validity block of
-the report, separate from the judgment scores.
+The **Mechanical validity checks (claudelint family)** are already done by
+`scripts/claudelint.js` from Step 2 — its output is the Validity block. Read the
+rubric's claudelint section only to *interpret* a finding (what a warning means,
+when it's a false positive). Don't re-run those checks by hand.
 
 ## Step 4 — Report
 
