@@ -213,13 +213,6 @@
       "type": "local",
       "command": ["code-review-graph", "serve"],
       "enabled": true
-    },
-    // fff fast file-search MCP — bare name relies on install dir being on PATH
-    // (Windows: %LOCALAPPDATA%\fff-mcp\bin\fff-mcp.exe). See README "fff".
-    "fff": {
-      "type": "local",
-      "command": ["fff-mcp"],
-      "enabled": true
     }
   }
 }

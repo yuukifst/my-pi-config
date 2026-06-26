@@ -11,7 +11,6 @@ better code, verify it works.
 |------|-----|-----|
 | [rtk](https://github.com/rtk-ai/rtk) | Compresses shell output 60–90% before the model sees it. | Hook auto-wraps every shell command. Corrupts `prisma`/`tsc`/`vitest` → run those raw. |
 | [caveman](https://github.com/JuliusBrussee/caveman) | Compresses agent replies ~75%. | Plugin, always-on (both agents). |
-| [fff](https://github.com/dmtrKovalenko/fff) | In-memory file search — cheaper than spawning ripgrep per call. | MCP server, agent prefers it over raw Grep/Glob. |
 | [code-review-graph](https://github.com/tirth8205/code-review-graph) | Feeds the agent only the blast-radius of a change — ~82× fewer tokens. | MCP server, agent prefers it over raw Grep/Glob. |
 
 ### Code quality
@@ -53,7 +52,7 @@ not by directory.
 ## Setup
 
 Both agents get the **same** toolset (rtk, caveman, superpowers, ponytail,
-code-review-graph, fff, agent-browser, portless, no-mistakes, goal mode); only the
+code-review-graph, agent-browser, portless, no-mistakes, goal mode); only the
 install mechanism differs per platform. Run the script for your agent from a
 clone of this repo — it installs binaries, registers MCP servers, wires
 plugins, and copies config. Idempotent: safe to re-run.
@@ -67,8 +66,8 @@ bash scripts/setup-claude.sh            # macOS / Linux
 ```
 
 Installs to `~/.claude`: copies `CLAUDE.md` + `skills/`; installs rtk (+`rtk init
--g` hook), no-mistakes, code-review-graph, fff; registers the code-review-graph,
-fff and agent-browser MCP servers; installs portless; installs the caveman, ponytail, superpowers and
+-g` hook), no-mistakes, code-review-graph; registers the code-review-graph
+and agent-browser MCP servers; installs portless; installs the caveman, ponytail, superpowers and
 goal-ledger plugins; sets `env.CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` in
 `settings.json` (auto-memory off — stale Claude-only memory degrades decisions;
 keep durable context in `CLAUDE.md`/`AGENTS.md` instead).
@@ -83,7 +82,7 @@ bash scripts/setup-opencode.sh
 Installs to `~/.config/opencode`: copies `opencode.jsonc` + `skills/` (auto-
 discovered, no `skills.paths` needed); installs rtk (+`rtk init -g --opencode`),
 no-mistakes, code-review-graph (symlinked onto PATH so the bare MCP command
-resolves), fff, agent-browser, portless; installs the caveman plugin. ponytail
+resolves), agent-browser, portless; installs the caveman plugin. ponytail
 (`@dietrichgebert/ponytail`) and superpowers are referenced in `opencode.jsonc`
 and resolve on launch.
 
@@ -98,8 +97,6 @@ from, run `no-mistakes init` once to create the `no-mistakes` push remote.
 | rtk | `curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh \| sh` then `rtk init -g` |
 | no-mistakes | `curl -fsSL https://raw.githubusercontent.com/kunchenguid/no-mistakes/main/docs/install.sh \| sh` — then run `no-mistakes init` **inside each repo** to create the `no-mistakes` push remote (without it `git push no-mistakes` has no remote to hit) |
 | code-review-graph | `python3 -m venv ~/.local/crg-venv && ~/.local/crg-venv/bin/pip install code-review-graph` (expose `code-review-graph` on PATH) |
-| fff (Windows) | `irm https://raw.githubusercontent.com/dmtrKovalenko/fff.nvim/main/install-mcp.ps1 \| iex` → `%LOCALAPPDATA%\fff-mcp\bin\fff-mcp.exe` |
-| fff (macOS/Linux) | `curl -L https://dmtrkovalenko.dev/install-fff-mcp.sh \| bash` |
 | agent-browser | `npm install -g agent-browser && agent-browser install` |
 | portless | `npm install -g portless` |
 

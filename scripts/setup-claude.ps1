@@ -27,17 +27,14 @@ if ($userPath -notlike "*$Bin*") {
 }
 & "$Bin\rtk.exe" init -g | Out-Null
 
-Write-Host "[3/5] no-mistakes + code-review-graph + fff"
+Write-Host "[3/5] no-mistakes + code-review-graph"
 Invoke-RestMethod "https://raw.githubusercontent.com/kunchenguid/no-mistakes/main/docs/install.ps1" | Invoke-Expression
 python -m venv $Crg
 & "$Crg\Scripts\pip.exe" install -q --upgrade pip code-review-graph
-Invoke-RestMethod "https://raw.githubusercontent.com/dmtrKovalenko/fff.nvim/main/install-mcp.ps1" | Invoke-Expression
 
 Write-Host "[4/5] MCP servers"
-$fff = Join-Path $env:LOCALAPPDATA "fff-mcp\bin\fff-mcp.exe"
-foreach ($n in "code-review-graph", "fff", "playwright") { claude mcp remove $n -s user 2>$null }
+foreach ($n in "code-review-graph", "playwright") { claude mcp remove $n -s user 2>$null }
 claude mcp add code-review-graph -s user -- "$Crg\Scripts\code-review-graph.exe" serve
-claude mcp add fff -s user -- $fff
 claude mcp add playwright -s user -- npx -y "@playwright/mcp@latest"
 
 Write-Host "[5/5] Plugins"
