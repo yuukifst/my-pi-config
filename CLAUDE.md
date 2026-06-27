@@ -90,8 +90,8 @@ Memory is how this agent gets smarter across sessions. Every project has a `.ope
 
 After 5+ significant sessions on a project, suggest the user run a dreaming session. A dreaming session reads all memory files, deduplicates, extracts cross-session patterns, verifies accuracy, and produces cleaned-up files.
 
-Dreaming prompt template: `~/.config/opencode/dreaming.md`
-Memory philosophy reference: `~/.config/opencode/learnings/memory-system.md`
+Dreaming prompt template: `~/.claude/dreaming.md`
+Memory philosophy reference: `~/.claude/learnings/memory-system.md`
 
 Never run dreaming during active development — it is a separate out-of-band session, just like Anthropic's async dreaming jobs.
 
@@ -101,7 +101,7 @@ In very long sessions (>30 complex turns), context accumulates and can drift. Wh
 
 ## Prompting — writing effective instructions
 
-When writing prompts for sub-agents, tools, or LLM calls, apply these principles (from `~/.config/opencode/learnings/prompt-engineering.md`):
+When writing prompts for sub-agents, tools, or LLM calls, apply these principles (from `~/.claude/learnings/prompt-engineering.md`):
 
 1. **Task first, context second.** State exactly what to do before providing data to analyze.
 2. **Use delimiters.** Markdown headers, XML tags, or triple backticks separate instructions from content — prevents context bleeding.
@@ -109,10 +109,10 @@ When writing prompts for sub-agents, tools, or LLM calls, apply these principles
 4. **Include an example** for non-obvious tasks. One correct input/output pair is worth paragraphs of explanation.
 5. **Add anti-hallucination guardrails.** "State if uncertain", "cite file:line", "insufficient data → say so."
 6. **Order matters.** Stable context first (rules, schemas), dynamic data second (logs, code), analysis last.
-7. **Prompt hygiene.** Periodically review instructions for stale cruft — patches for old model limitations, redundant constraints, contradictory rules. If a rule hasn't been relevant in 10+ sessions, remove it. See `~/.config/opencode/learnings/prompting-playbook.md` for the maintenance playbook.
+7. **Prompt hygiene.** Periodically review instructions for stale cruft — patches for old model limitations, redundant constraints, contradictory rules. If a rule hasn't been relevant in 10+ sessions, remove it. See `~/.claude/learnings/prompting-playbook.md` for the maintenance playbook.
 8. **Version control defensive changes.** Every "never X" or "always Y" rule in CLAUDE.md should have a git commit explaining WHY it was added. During dreaming, check whether defensive patches have become counterproductive.
 
-For agent workflow strategies, see `~/.config/opencode/learnings/agent-best-practices.md`.
+For agent workflow strategies, see `~/.claude/learnings/agent-best-practices.md`.
 
 ## Git — commit & push (read the rules file first)
 
