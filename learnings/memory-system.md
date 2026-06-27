@@ -71,7 +71,7 @@ Dreaming runs as a separate session because:
 
 ## Real-world impact
 
-Anthropic reported that teams using the memory system achieved a **90% reduction in initial mistakes** (Rakuten use case). Applied to OpenCode: the agent stops re-discovering which command to run, which file to edit, and which error fix to apply — because it's in memory.
+Anthropic reported that teams using the memory system achieved a **97% reduction in first-pass errors** (Rakuten use case). WiseDocs similarly reduced common document verification issues. Applied to OpenCode: the agent stops re-discovering which command to run, which file to edit, and which error fix to apply — because it's in memory.
 
 ## Why this works in OpenCode
 

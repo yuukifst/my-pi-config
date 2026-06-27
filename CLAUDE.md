@@ -15,6 +15,7 @@ Cross-project guidance. Lean by design: only what's non-obvious or machine-speci
 - Simplest code that solves it. No speculative features, abstractions, or config not asked for.
 - Surgical: touch only what the request needs. Match existing style. Remove only orphans *your* change created; flag pre-existing dead code, don't delete it.
 - Turn tasks into verifiable goals with a clear success check; for refactors, keep existing tests green before and after.
+- **Generate-evaluate-repair loop for debugging:** produce a fix → run tests/lint → repair only failures → repeat until clean. Don't critique and generate simultaneously.
 - **No TDD / test-first.** Do NOT use the superpowers `test-driven-development` skill or any red-green-refactor flow. Write the implementation first; add a regression test after a bugfix. This overrides any skill that says "always TDD".
 - Same error twice → stop, show error, ask one question. Never install packages to fix errors.
 
@@ -157,6 +158,7 @@ When writing prompts for sub-agents, tools, or LLM calls, apply these principles
 4. **Include an example** for non-obvious tasks. One correct input/output pair is worth paragraphs of explanation.
 5. **Add anti-hallucination guardrails.** "State if uncertain", "cite file:line", "insufficient data → say so."
 6. **Order matters.** Stable context first (rules, schemas), dynamic data second (logs, code), analysis last.
+7. **Prompt hygiene.** Periodically review instructions for stale cruft — patches for old model limitations, redundant constraints, contradictory rules. If a rule hasn't been relevant in 10+ sessions, remove it. See `~/.config/opencode/learnings/prompting-playbook.md` for the maintenance playbook.
 
 For agent workflow strategies, see `~/.config/opencode/learnings/agent-best-practices.md`.
 
