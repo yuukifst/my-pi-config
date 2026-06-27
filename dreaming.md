@@ -91,6 +91,14 @@ Anthropic's design supports ad hoc, nightly, hourly, or event-triggered (end of 
 
 Harvey (legal AI) saw a **6x increase in completion rates** for their legal benchmark after adopting dreaming. The pattern is consistent: dreaming finds cross-session patterns that individual agents miss, producing a step-change in performance.
 
+## Token efficiency
+
+Anthropic's dreaming achieves ~95% cache hit rate because most processing is agentic and repetitive. The initial investment in curation pays dividends: downstream agents spend fewer tokens re-discovering information. Same principle applies to OpenCode dreaming — the session uses significant tokens once, but all subsequent sessions benefit from cleaner, faster memory access.
+
+## Architecture note: dream harness
+
+Anthropic's dreaming harness spawns one sub-agent per input session for exhaustive parallel analysis. An orchestrator coordinates them. For OpenCode, the dreaming session itself acts as the single orchestrator reviewing all memory files — sufficient for project-scale memory stores.
+
 ## How to start
 
 Open a new terminal, navigate to the project, run:

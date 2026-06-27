@@ -20,13 +20,37 @@ Agents operating in isolation waste effort. Every session reinvents understandin
 
 Each step reduces constraints and increases what agents can do autonomously. Memory is the latest — and perhaps most critical — because it enables cumulative learning.
 
-## The three-layer model (Anthropic)
+## Three composable layers (Anthropic's model)
+
+```
+Session (isolated, ephemeral)
+  ↓ augmented by
+Memory Store (connects sessions, persistent)
+  ↓ improved by
+Dreaming (organizes, enriches, checks staleness)
+```
+
+A session alone is an isolated conversation. Memory connects sessions into a continuous stream of learning. Dreaming maintains quality as the volume of memory grows — preventing disorganization, staleness, and unbounded growth.
+
+## The three-layer architecture (Anthropic)
 
 | Layer | Anthropic API | OpenCode equivalent |
 |---|---|---|
 | **Storage** | Managed memory store API, permission scopes, optimistic concurrency | `.opencode/memory/` directory with MD files, git for versioning |
 | **Structure** | File-like organization, index files, content taxonomy | `INDEX.md` (navigation map), `codebase.md`, `patterns.md`, `errors.md` |
 | **Process** | Dreaming (async batch job, multi-agent harness) | Manual dreaming session via `dreaming.md`, human-in-the-loop review |
+
+## Why file system as memory interface
+
+Anthropic's design mounts memory as a file system because Claude already excels at navigating file systems. The model uses **bash and grep** to explore and search memory — familiar tools, no specialized API:
+
+```bash
+grep -r "CMA talk" /memory/    # search for keyword
+cat /memory/sessions.md        # read specific file
+ls /memory/                    # list what's available
+```
+
+This is exactly how the OpenCode memory system works: the agent reads MD files with the Read tool and writes with Write/Edit. Same pattern, same tools, no new infrastructure.
 
 ## Memory file taxonomy (expanded)
 
