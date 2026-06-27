@@ -82,7 +82,14 @@ After user approval of the proposed diff, apply all changes to the memory files.
 - When you notice the agent re-discovering things that should be in memory
 - When errors.md has 20+ entries (time to consolidate)
 - Before starting a major new feature (verify memory is current)
+- **Triggered by events:** after completing a major task, before a deployment, after a bug that took multiple sessions to fix
 - Monthly as maintenance
+
+Anthropic's design supports ad hoc, nightly, hourly, or event-triggered (end of session) dreaming. For OpenCode, the manual equivalent: run dreaming when you notice a pattern of inefficiency or after completing significant work.
+
+## Real-world impact
+
+Harvey (legal AI) saw a **6x increase in completion rates** for their legal benchmark after adopting dreaming. The pattern is consistent: dreaming finds cross-session patterns that individual agents miss, producing a step-change in performance.
 
 ## How to start
 

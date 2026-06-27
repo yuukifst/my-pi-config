@@ -6,6 +6,20 @@ Synthesized from Anthropic's "Memory and dreaming for self-learning agents" and 
 
 Agents operating in isolation waste effort. Every session reinvents understanding of the codebase, repeats mistakes, and fails to leverage strategies that worked in prior sessions. Memory persistence is the primitive that transforms a stateless agent into a self-learning one.
 
+**Why now:** A Meter study found that the length of tasks agents can complete is doubling every 7 months. As agents run for longer time horizons (hours → days), managing context across sessions becomes critical. Memory is the bridge from single-session agents to continuous, self-improving agents.
+
+## The agent evolution timeline (Anthropic)
+
+```
+2024: MCP → agents can access external tools/data
+2025: Claude Code + Agent SDK → barrier to building agents lowered
+2025: Skills → generic abstraction for bolting on capabilities
+2026: Claude Managed Agents → platform for reliably running agents
+2026: Memory + Dreaming → agents learn and improve across tasks
+```
+
+Each step reduces constraints and increases what agents can do autonomously. Memory is the latest — and perhaps most critical — because it enables cumulative learning.
+
 ## The three-layer model (Anthropic)
 
 | Layer | Anthropic API | OpenCode equivalent |
@@ -71,7 +85,28 @@ Dreaming runs as a separate session because:
 
 ## Real-world impact
 
-Anthropic reported that teams using the memory system achieved a **97% reduction in first-pass errors** (Rakuten use case). WiseDocs similarly reduced common document verification issues. Applied to OpenCode: the agent stops re-discovering which command to run, which file to edit, and which error fix to apply — because it's in memory.
+Anthropic reported that teams using the memory system achieved:
+- **97% reduction in first-pass errors** (Rakuten, production agents)
+- **6x increase in completion rates** (Harvey, legal benchmark with dreaming)
+- **Reduced common issues** (WiseDocs, cross-session document verification)
+
+Applied to OpenCode: the agent stops re-discovering which command to run, which file to edit, and which error fix to apply — because it's in memory.
+
+## Memory raises the floor for every agent
+
+When agents share memory that's constantly improving, the baseline competence of every agent rises. An agent encountering a problem for the first time benefits from all previous agents' experience with that problem. Dreaming raises this floor even further by extracting cross-agent patterns that no single agent could discover alone.
+
+## Permission scopes — the hierarchy pattern
+
+Anthropic's design supports different access levels per memory store. Applied to OpenCode:
+
+| Scope | Example | Agent can |
+|---|---|---|
+| **Read-only shared** | Project conventions, coding standards, architecture docs | Read only |
+| **Read-write task** | `.opencode/memory/` | Read + write |
+| **Human-curated** | CLAUDE.md, ADR documents | Read only (human edits) |
+
+The Anthropic SRE demo shows this in practice: org-wide runbooks/SLO policies (read-only) + task-specific investigation notes (read-write). Agents read the stable shared knowledge and write their discoveries to task memory.
 
 ## Why this works in OpenCode
 
@@ -87,20 +122,6 @@ Anthropic reported that teams using the memory system achieved a **97% reduction
 - **Stale memory:** Codebase evolves, memory files don't auto-update. Dreaming should verify accuracy. Entries >3 months old get re-checked.
 - **Memory as crutch:** Memory supplements code reading, never replaces it. Always verify before trusting.
 - **Memory without metadata:** Undated, contextless entries are hard to trust. Always include date and brief context.
-
-## When to memory-write
-
-Write to memory when:
-- You discovered a non-obvious architecture fact (hidden dependency, implicit convention)
-- A task required ≥3 attempts to get right (the fix pattern is worth recording)
-- A command sequence worked that you'd need to rediscover later
-- You hit an error with an unobvious root cause
-- A tool/API behaved differently than documented
-
-Don't write when:
-- The fix was in the docs already
-- The task was trivial and the code is self-documenting
-- It's a guess, not a verified finding
 
 ## When to memory-write
 
