@@ -132,3 +132,58 @@ Complex prompts should have clear sections with distinct purposes:
 - `## Working method` = instructions (decision rules)
 - `## Architecture quick reference` = data (project facts)
 - `## Code rules` = policies (hard constraints)
+
+## Version control for prompt changes
+
+From the workshop: "A best practice is using version control. Wherever we are making defensive changes in the prompt, we are tracking the reason why we've introduced these. Sometimes they're necessary, but in the future these changes can produce unwanted effects, so that we can backtrack on them."
+
+**Applied to CLAUDE.md:**
+- Every defensive instruction (like "never X" or "always Y") should have a git commit explaining WHY it was added
+- When reviewing CLAUDE.md during dreaming, check if defensive patches are still needed or if the model has outgrown them
+- The transcript example: "Never give a customer the wrong plan details. Instead, point them to the URL." — was a patch for an old model that a newer model overfitted to. The rule became counterproductive.
+
+## Positive instructions over ban lists
+
+From the workshop wrap-up: "Avoiding long ban lists" was cited as a key takeaway.
+
+**Anti-pattern:**
+```
+Don't use TypeScript enums
+Don't use default exports
+Don't use class components
+Don't use relative imports beyond ../../
+```
+
+**Better — positive framing:**
+```
+Use const objects with `as const` for enumerated values
+Use named exports
+Use functional components with hooks
+Keep imports within the src/ directory
+```
+
+The model optimizes for what you tell it. A ban list forces it to navigate around forbidden territory. Positive instructions give it a clear target to aim for.
+
+**Applied to CLAUDE.md:** Audit existing instructions. Replace "don't do X" patterns with "do Y instead" wherever possible.
+
+## Self-check before output
+
+From the scheduling agent segment: "Most critically telling it to check its work before outputting it."
+
+The model can produce reasoning, code, or analysis — and then review its own output for violations before presenting it. This is the self-verification pattern, separate from the generate-evaluate-repair loop.
+
+**Applied to code agents:**
+- After generating code, the agent should run lint/typecheck on its own output before showing it
+- After writing memory, verify the file is syntactically correct
+- After proposing a diff, confirm it applies cleanly
+
+## Information withholding (opposite of hallucination)
+
+From the transcript: "We worry a lot about hallucinations or the invention of facts and numbers, but actually the opposite can also happen. The model can withhold information that it actually has access to."
+
+This happens when a defensive instruction ("never give the customer wrong information") is stronger than the instruction to provide accurate data. The model chooses silence over potential inaccuracy.
+
+**Applied to code agents:**
+- "Don't add comments" → agent removes ALL comments, even license headers
+- "Don't guess" → agent says "I don't know" for questions it could answer by reading a file
+- Fix: "Don't add explanatory comments. Keep license headers and existing docstrings. When uncertain, read the relevant file before answering."
