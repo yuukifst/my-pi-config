@@ -9,7 +9,10 @@ You are running a memory consolidation ("dreaming") session for OpenCode. Your j
 
 ## Phase 1 — Audit
 
-Read every file in .opencode/memory/ for this project:
+Read .opencode/memory/INDEX.md first to understand what exists and when each file was last modified.
+
+Then read every memory file:
+- INDEX.md
 - codebase.md
 - patterns.md
 - errors.md
@@ -30,30 +33,47 @@ Look across ALL memory entries for recurring themes:
 - Same tool/command used successfully 3+ times → add to patterns.md
 - Architecture facts that should be in codebase.md but are scattered across errors.md
 
-## Phase 4 — Verify accuracy
+## Phase 4 — Check staleness
+
+For every entry in every memory file:
+- Entries older than 3 months: grep/glob to verify they still apply
+- File paths that no longer exist → mark [STALE], suggest removal
+- Patterns that reference removed APIs/functions → update or remove
+- Commands that have changed (e.g. renamed scripts) → update
+
+Staleness check prevents "rot" — memory that was accurate in June but lies in October.
+
+## Phase 5 — Verify accuracy
 
 - For codebase.md: grep/glob to verify file paths and module names still exist
 - For patterns.md: are the described workflows still valid?
 - For errors.md: have any been fixed at the root level and are now obsolete?
 
-## Phase 5 — Produce changes
+## Phase 6 — Produce changes
 
-Output the changes as a clear list:
+Output the changes as a clear list for HUMAN REVIEW before applying:
 - [MERGE] entry A + entry B in errors.md → combined entry
 - [PROMOTE] "Ollama timeout pattern" from errors.md → patterns.md
 - [REMOVE] "Widget import path" — now obvious from file structure
+- [REMOVE/STALE] "Docker setup steps" — paths changed, no longer accurate
 - [ADD] new pattern discovered across sessions
 
-## Phase 6 — Apply
+## Phase 7 — Rebuild INDEX.md
 
-After user approval, apply all changes to the memory files.
+Update INDEX.md to reflect all changes: new last-modified dates, added/removed entries, updated summaries.
+
+## Phase 8 — Apply
+
+After user approval of the proposed diff, apply all changes to the memory files. Do NOT auto-apply — dreaming is non-destructive and human-in-the-loop, exactly like Anthropic's output memory store clone workflow.
 
 ## Rules
 
 - Non-destructive: never delete without explicit user approval
+- Human-in-the-loop: output is a proposed diff, user applies it
 - Evidence-based: cite which sessions/entries support each change
 - Conservative: when uncertain, flag for human review instead of auto-modifying
 - Update CLAUDE.md if memory rules themselves need adjustment
+- After applying, update INDEX.md as the last step
 ```
 
 ## When to run dreaming

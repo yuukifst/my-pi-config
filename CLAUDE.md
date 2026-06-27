@@ -105,7 +105,7 @@ Memory is how this agent gets smarter across sessions. Every project has a `.ope
 ### Session protocol (ALWAYS)
 
 **Start of session — before any action:**
-- Check if `.opencode/memory/` exists in the project. If it does, read `codebase.md`, `patterns.md`, and `errors.md` for context relevant to the current task.
+- Check if `.opencode/memory/` exists in the project. If it does, read `INDEX.md` first to know what's available, then read relevant files (`codebase.md`, `patterns.md`, `errors.md`) for context relevant to the current task.
 - Don't re-read memory in the same session unless the task domain changes.
 
 **End of session — after completing work:**
@@ -129,6 +129,7 @@ Memory is how this agent gets smarter across sessions. Every project has a `.ope
 
 | File | Content | Trigger to write |
 |---|---|---|
+| `INDEX.md` | Navigation map: summaries + last-modified dates for all memory files | After every write to any memory file |
 | `codebase.md` | Architecture: module boundaries, key files, dependency chains, conventions | Discovered a non-obvious structural fact |
 | `patterns.md` | Reusable strategies: workflows, command sequences, how-to guides | Completed a task that required a novel approach |
 | `errors.md` | Error patterns: root cause + fix | Diagnosed and fixed an error with unobvious cause |
