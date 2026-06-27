@@ -213,6 +213,11 @@
       "type": "local",
       "command": ["code-review-graph", "serve"],
       "enabled": true
+    },
+    "agent-browser": {
+      "type": "local",
+      "command": ["agent-browser", "mcp"],
+      "enabled": true
     }
   }
 }
