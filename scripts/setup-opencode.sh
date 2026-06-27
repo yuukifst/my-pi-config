@@ -10,7 +10,10 @@ mkdir -p "$cfg/skills" "$bin"
 
 echo "[1/4] Config files"
 cp "$repo/opencode.jsonc" "$cfg/opencode.jsonc"
+cp "$repo/CLAUDE.md" "$cfg/CLAUDE.md"
+cp "$repo/dreaming.md" "$cfg/dreaming.md"
 cp -r "$repo/skills/." "$cfg/skills/"
+cp -r "$repo/learnings/." "$cfg/learnings/"
 
 echo "[2/4] rtk"
 curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh

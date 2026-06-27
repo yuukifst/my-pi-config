@@ -11,6 +11,12 @@ mkdir -p "$claude/skills" "$bin"
 echo "[1/5] Config files"
 cp "$repo/CLAUDE.md" "$claude/CLAUDE.md"
 cp -r "$repo/skills/." "$claude/skills/"
+# Also populate OpenCode config with companion files
+cfg="$HOME/.config/opencode"
+mkdir -p "$cfg"
+cp "$repo/CLAUDE.md" "$cfg/CLAUDE.md"
+cp "$repo/dreaming.md" "$cfg/dreaming.md"
+cp -r "$repo/learnings/." "$cfg/learnings/"
 
 echo "[2/5] rtk"
 curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh

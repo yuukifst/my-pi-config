@@ -97,6 +97,50 @@ Generate design references *before* coding. Skip only for small internal CRUD.
 
 Performance has no dedicated repo skill — `improve` finds perf issues, `thermo-nuclear-code-quality-review` audits them, `diagnosing-bugs` handles regressions.
 
+## Agent Memory (self-learning)
+
+Memory is how this agent gets smarter across sessions. Every project has a `.opencode/memory/` directory with MD files the agent reads and writes. This is the OpenCode equivalent of Anthropic's managed agent memory stores.
+
+### Session protocol (ALWAYS)
+
+**Start of session — before any action:**
+- Check if `.opencode/memory/` exists in the project. If it does, read `codebase.md`, `patterns.md`, and `errors.md` for context relevant to the current task.
+- Don't re-read memory in the same session unless the task domain changes.
+
+**End of session — after completing work:**
+- If you discovered something a future session would benefit from, write it to the appropriate memory file (see taxonomy below).
+- Never write guesses. Only verified facts.
+- Trivial actions ("ran npm install") do NOT get written. Threshold: "would this save a future session ≥5 minutes?"
+
+**When to write:**
+- Non-obvious architecture fact (hidden dependency, implicit convention)
+- Task required ≥3 attempts to get right (record the fix pattern)
+- Command sequence that worked and would be hard to rediscover
+- Error with unobvious root cause + verified fix
+- Tool/API behavior that differs from documentation
+
+**When NOT to write:**
+- Fix was already in docs or code comments
+- Trivial one-liner with obvious cause
+- Speculation or guess about how something works
+
+### Memory file taxonomy
+
+| File | Content | Trigger to write |
+|---|---|---|
+| `codebase.md` | Architecture: module boundaries, key files, dependency chains, conventions | Discovered a non-obvious structural fact |
+| `patterns.md` | Reusable strategies: workflows, command sequences, how-to guides | Completed a task that required a novel approach |
+| `errors.md` | Error patterns: root cause + fix | Diagnosed and fixed an error with unobvious cause |
+
+### Dreaming (memory consolidation)
+
+After 5+ significant sessions on a project, suggest the user run a dreaming session. A dreaming session reads all memory files, deduplicates, extracts cross-session patterns, verifies accuracy, and produces cleaned-up files.
+
+Dreaming prompt template: `~/.config/opencode/dreaming.md`
+Memory philosophy reference: `~/.config/opencode/learnings/memory-system.md`
+
+Never run dreaming during active development — it is a separate out-of-band session, just like Anthropic's async dreaming jobs.
+
 ## Git — commit & push (read the rules file first)
 
 About to commit or push? Read `~/.claude/rules/git.md` BEFORE acting. It covers: confirming the commit identity (shared/work PC — never commit on the configured identity unconfirmed), Conventional Commits format + allowed types, the `no-mistakes` push gate, and the no-AI-attribution rule (no AI/tool trailers from any agent). Not committing/pushing → skip it.
