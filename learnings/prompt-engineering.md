@@ -84,6 +84,57 @@ Step 4: Propose the minimal fix
 
 This mirrors how the best human developers debug — and how the model thinks most effectively.
 
+## Prefilled responses — "put words in Claude's mouth"
+
+A technique from the Anthropic workshop: start the model's output with the expected opening tag or format symbol. This forces parsing-friendly output without preamble.
+
+```
+System: ... full instructions ...
+
+User: Analyze this form and return your verdict.
+
+Assistant: <final_verdict>
+```
+
+The model continues from `<final_verdict>` instead of generating "Based on my analysis of the form..." preamble. The output is directly parseable.
+
+**Applied to code agents:**
+- When asking for code: prefill with ` ```python\n` or ` ```diff\n`
+- When asking for structured data: prefill with `{` or `<output>`
+- When asking for a list: prefill with `1. `
+
+## Extended thinking as prompt debugging tool
+
+From the workshop: Claude (and modern models) have extended thinking — a scratchpad where reasoning happens between tool calls. You can analyze that reasoning transcript to understand HOW the model approaches data.
+
+**The insight:** If the model produces wrong results, don't guess why. Read the thinking transcript. Find where the reasoning went wrong. Then update the prompt to guide the model through the correct reasoning path.
+
+This is "baking human intuition into the system prompt" — extracting the model's own successful reasoning patterns and making them part of the stable instructions.
+
+**Applied to OpenCode:**
+- When the agent repeatedly fails at a task, don't just add a "don't do X" rule
+- Trace the agent's actual reasoning steps
+- Find where it diverged from the correct path
+- Add a step-by-step reasoning guide to CLAUDE.md that walks through the correct approach
+
+This is the same loop as dreaming, but at the single-task level: observe failure → trace reasoning → bake correct pattern into instructions.
+
+## Cite evidence for every claim
+
+From the workshop: "If it wants to say vehicle B turned right, it should say I know this based on the fact that box two is clearly checked."
+
+Every factual claim should reference the specific source:
+- Code facts: `file:line`
+- Architecture claims: which file/grep confirmed it
+- Error fixes: which log line or stack trace entry
+- Memory entries: which session discovered it
+
+This is the difference between "the frontend uses Redux" and "grep `createSlice` found in `src/store/slices/` — the frontend uses Redux Toolkit."
+
+## Temperature 0 for deterministic tasks
+
+The workshop uses temperature 0 for factual analysis. Same applies to code generation: deterministic output benefits from low temperature. Higher temperature is for creative/varied output (report prose, UI copy).
+
 ## Iteration is the process
 
 Prompt engineering is empirical. If the first prompt produces wrong output:
