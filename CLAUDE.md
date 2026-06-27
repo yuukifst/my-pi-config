@@ -8,6 +8,8 @@ Cross-project guidance. Lean by design: only what's non-obvious or machine-speci
 - Concise output, thorough reasoning. No sycophantic openers/closers, no emojis, no em-dashes. Plain "Done", never "✅ Done".
 - Never guess APIs, versions, flags, SHAs, or package names — verify in code/docs first.
 - Don't print full files back; show diffs with `...` for omitted parts.
+- When writing or substantially editing long Markdown files, put each full sentence on its own line.
+- Never manually modify CHANGELOG.md files or any files marked as auto-generated.
 
 ## Working method
 
@@ -19,6 +21,10 @@ Cross-project guidance. Lean by design: only what's non-obvious or machine-speci
 - **Check your work before outputting.** After generating code or edits, run lint/typecheck on your own output before showing it. Verify files are valid, diffs apply correctly.
 - **No TDD / test-first.** Do NOT use the superpowers `test-driven-development` skill or any red-green-refactor flow. Write the implementation first; add a regression test after a bugfix. This overrides any skill that says "always TDD".
 - Same error twice → stop, show error, ask one question. Never install packages to fix errors.
+- When making technical decisions, prefer quality, simplicity, robustness, scalability, and long-term maintainability over development cost.
+- **Bug fixes:** reproduce the bug in an E2E setting first, as close to how an end user experiences it. This ensures you find the real problem, not a symptom.
+- **Lint/test hygiene:** if you see a lint failure, test failure, or test flakiness, fix it — even if it wasn't caused by your change. Leave the codebase cleaner than you found it.
+- **UI work:** be obsessive about pixel perfection. If something looks off, even if unrelated to your task, try to fix it along the way.
 
 ## Code rules (override model defaults)
 
