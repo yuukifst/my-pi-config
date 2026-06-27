@@ -20,6 +20,10 @@ Agents operating in isolation waste effort. Every session reinvents understandin
 
 Each step reduces constraints and increases what agents can do autonomously. Memory is the latest — and perhaps most critical — because it enables cumulative learning.
 
+**Claude.md was Anthropic's first memory primitive.** Launched with Claude Code ~18 months ago, it let agents leave notes for themselves. Memory in managed agents is the evolution: from a single constrained file to a full file-system-based memory store with dreaming for maintenance. The same trajectory applies to OpenCode: CLAUDE.md is the foundation, `.opencode/memory/` is the expansion.
+
+**Skills are procedural memory.** Anthropic's Mahesh explicitly called skills "a form of procedural memory that have a pretty lightweight spec that say, 'Here's how you can actually learn how to do this new capability.'" In OpenCode: skills + CLAUDE.md + memory files = declarative memory (what), procedural memory (how), and learned memory (experience).
+
 ## Three composable layers (Anthropic's model)
 
 ```
@@ -146,6 +150,7 @@ The Anthropic SRE demo shows this in practice: org-wide runbooks/SLO policies (r
 - **Stale memory:** Codebase evolves, memory files don't auto-update. Dreaming should verify accuracy. Entries >3 months old get re-checked.
 - **Memory as crutch:** Memory supplements code reading, never replaces it. Always verify before trusting.
 - **Memory without metadata:** Undated, contextless entries are hard to trust. Always include date and brief context.
+- **Secrets in memory:** Never write API keys, tokens, passwords, or PII to memory files. Memory files may be committed to git or shared. Anthropic's enterprise customers run PII scanning on memory stores for this reason.
 
 ## When to memory-write
 

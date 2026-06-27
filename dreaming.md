@@ -66,6 +66,8 @@ Update INDEX.md to reflect all changes: new last-modified dates, added/removed e
 
 After user approval of the proposed diff, apply all changes to the memory files. Do NOT auto-apply — dreaming is non-destructive and human-in-the-loop, exactly like Anthropic's output memory store clone workflow.
 
+**After applying, add a verification note** to each modified entry: `[Verified 2026-06-27 — matches current codebase]`. This is the same pattern Anthropic uses: "At this time, based on this transcript I just looked at, this memory is actually accurate." Future agents can trust verified entries more than unverified ones.
+
 ## Rules
 
 - Non-destructive: never delete without explicit user approval
