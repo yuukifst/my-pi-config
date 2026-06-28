@@ -17,7 +17,7 @@ Then read every memory file:
 - patterns.md
 - errors.md
 
-Also read ~/.config/opencode/learnings/memory-system.md for the memory philosophy.
+Also read ~/.claude/rules/memory-system.md for the memory philosophy.
 
 ## Phase 2 — Deduplicate
 
