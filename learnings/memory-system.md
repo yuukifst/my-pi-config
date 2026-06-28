@@ -1,167 +1,64 @@
-# Self-Learning Agent Memory System — Applied to OpenCode
+# Agent Memory System
 
-Synthesized from Anthropic's "Memory and dreaming for self-learning agents" and "Agents that remember" workshops.
+How agents read, write, and maintain persistent memory across sessions.
 
-## Core insight
+## Files and what goes where
 
-Agents operating in isolation waste effort. Every session reinvents understanding of the codebase, repeats mistakes, and fails to leverage strategies that worked in prior sessions. Memory persistence is the primitive that transforms a stateless agent into a self-learning one.
+| File | Put this in it |
+|---|---|
+| `INDEX.md` | Table of all memory files with summaries and last-modified dates. Update after every write. Read first every session. |
+| `codebase.md` | Verified architecture facts: module layout, key files at specific paths, dependency chains, naming conventions. Not speculation. |
+| `patterns.md` | Reusable strategies: proven workflows, command sequences, how-to guides. "To add a new agent, copy `agents/base.py`, decorate with `@AgentRegistry.register`, import in `__init__.py`." |
+| `errors.md` | Error patterns with root cause + fix. "Ollama OOM on entity extraction → reduce `max_tokens_per_page` to 1024." Not "I got an error" — the diagnosis. |
 
-**Why now:** A Meter study found that the length of tasks agents can complete is doubling every 7 months. As agents run for longer time horizons (hours → days), managing context across sessions becomes critical. Memory is the bridge from single-session agents to continuous, self-improving agents.
+## Entry format
 
-## The agent evolution timeline (Anthropic)
-
-```
-2024: MCP → agents can access external tools/data
-2025: Claude Code + Agent SDK → barrier to building agents lowered
-2025: Skills → generic abstraction for bolting on capabilities
-2026: Claude Managed Agents → platform for reliably running agents
-2026: Memory + Dreaming → agents learn and improve across tasks
-```
-
-Each step reduces constraints and increases what agents can do autonomously. Memory is the latest — and perhaps most critical — because it enables cumulative learning.
-
-**Claude.md was Anthropic's first memory primitive.** Launched with Claude Code ~18 months ago, it let agents leave notes for themselves. Memory in managed agents is the evolution: from a single constrained file to a full file-system-based memory store with dreaming for maintenance. The same trajectory applies to OpenCode: CLAUDE.md is the foundation, `.opencode/memory/` is the expansion.
-
-**Skills are procedural memory.** Anthropic's Mahesh explicitly called skills "a form of procedural memory that have a pretty lightweight spec that say, 'Here's how you can actually learn how to do this new capability.'" In OpenCode: skills + CLAUDE.md + memory files = declarative memory (what), procedural memory (how), and learned memory (experience).
-
-## Three composable layers (Anthropic's model)
+Every entry must have date and context tag:
 
 ```
-Session (isolated, ephemeral)
-  ↓ augmented by
-Memory Store (connects sessions, persistent)
-  ↓ improved by
-Dreaming (organizes, enriches, checks staleness)
+### [Topic] — 2026-06-27 (Ollama timeout)
 ```
 
-A session alone is an isolated conversation. Memory connects sessions into a continuous stream of learning. Dreaming maintains quality as the volume of memory grows — preventing disorganization, staleness, and unbounded growth.
+Undated entries are untrustworthy. Entries >3 months old should be re-verified during dreaming.
 
-## The three-layer architecture (Anthropic)
+## When to write
 
-| Layer | Anthropic API | OpenCode equivalent |
-|---|---|---|
-| **Storage** | Managed memory store API, permission scopes, optimistic concurrency | `.opencode/memory/` directory with MD files, git for versioning |
-| **Structure** | File-like organization, index files, content taxonomy | `INDEX.md` (navigation map), `codebase.md`, `patterns.md`, `errors.md` |
-| **Process** | Dreaming (async batch job, multi-agent harness) | Manual dreaming session via `dreaming.md`, human-in-the-loop review |
+Write only when it would save a future session ≥5 minutes:
+- Non-obvious architecture fact (hidden dependency, implicit convention)
+- Task required ≥3 attempts to get right
+- Command sequence that worked and would be hard to rediscover
+- Error with unobvious root cause + verified fix
+- Tool/API behaved differently than documented
 
-## Why file system as memory interface
+Never write:
+- Fixes already in docs or code comments
+- Trivial one-liners with obvious cause
+- Guesses or speculation
+- API keys, tokens, passwords, or PII
 
-Anthropic's design mounts memory as a file system because Claude already excels at navigating file systems. The model uses **bash and grep** to explore and search memory — familiar tools, no specialized API:
+## Dreaming (memory consolidation)
 
-```bash
-grep -r "CMA talk" /memory/    # search for keyword
-cat /memory/sessions.md        # read specific file
-ls /memory/                    # list what's available
-```
+Run as a separate session. Steps:
+1. Read `INDEX.md` first
+2. Read all memory files
+3. Find and merge duplicates
+4. Extract patterns across entries → promote to patterns.md
+5. Check staleness: entries >3 months, paths that no longer exist
+6. Verify accuracy: grep/glob to confirm file paths and patterns still valid
+7. Produce a diff for human review — do NOT auto-apply
+8. Rebuild `INDEX.md`
 
-This is exactly how the OpenCode memory system works: the agent reads MD files with the Read tool and writes with Write/Edit. Same pattern, same tools, no new infrastructure.
+Template: `~/.config/opencode/dreaming.md`. Trigger after 5+ sessions or when errors.md has 20+ entries.
 
-## Memory file taxonomy (expanded)
+## Permission model (implicit)
 
-| File | Purpose | Writable by agent | Readable by agent |
-|---|---|---|---|
-| `INDEX.md` | Navigation map: lists all memory files with summaries, last-modified dates | After each write to other files | Always, first thing |
-| `codebase.md` | Discovered architecture: modules, dependencies, conventions | Verified facts only | Yes |
-| `patterns.md` | Reusable strategies, proven workflows, command sequences | Yes | Yes |
-| `errors.md` | Error patterns with root cause + fix | Yes | Yes |
+- `.opencode/memory/` files: agent can read and write
+- `CLAUDE.md`, ADRs, project docs: read only (human-curated)
+- No secrets ever in memory files
 
-**INDEX.md is the shortcut.** Instead of reading all 3 memory files every session, the agent reads INDEX.md first (small, fast) and only reads the files relevant to the current task. This mirrors Anthropic's design: "the first thing it does is see that note in its memory store that says 'we already did this investigation'."
+## Anti-patterns
 
-## Memory entry metadata
-
-Every entry should include context for future sessions:
-
-```
-### [Topic] — added 2026-06-27 (Ollama timeout pattern)
-```
-
-Format: title, date added, brief context tag. Dates enable staleness detection: entries older than 3 months should be re-verified during dreaming.
-
-## Memory files — what agents record
-
-Agents write to these files at session end:
-
-- **`codebase.md`** — Discovered architecture: module boundaries, key files, dependency chains, naming conventions. "This project has 16 agents communicating via `agent_tasks` table." Not speculation — only what was verified via grep/read.
-- **`patterns.md`** — Reusable patterns: "To add a new agent, copy `agents/base.py`, register with `@AgentRegistry.register`, import in `__init__.py`." Also: successful command sequences, known workflow templates.
-- **`errors.md`** — Error patterns with root cause + fix: "Ollama OOM on entity extraction → reduce `max_tokens_per_page` to 1024." Not "I got an error" — the diagnosis.
-- **`INDEX.md`** — Updated after every write. Keeps a compact table of what's in each file with last-modified dates.
-
-## Dreaming — memory consolidation
-
-Dreaming is a **separate OpenCode session** that:
-
-1. Reads `INDEX.md` first to know what exists
-2. Reads all memory files
-3. Finds duplicates (same error documented twice → merge)
-4. Extracts patterns (3 sessions hit the same Ollama timeout → promote to `patterns.md`)
-5. Checks staleness (entries >3 months old, code paths that no longer exist)
-6. Verifies accuracy (does `codebase.md` still match the current file tree?)
-7. Produces a consolidated diff — user reviews and approves (human-in-the-loop QA)
-8. Rebuilds `INDEX.md` to reflect changes
-
-The dreaming prompt template lives at `~/.config/opencode/dreaming.md`.
-
-Dreaming is non-destructive: it reads current memory, produces proposed changes as a diff, and the user applies them after review. Just like the Anthropic API clones the input memory store before modifying it, and just like their human-in-the-loop review for error detection.
-
-### Why dreaming is out-of-band
-
-Dreaming runs as a separate session because:
-- It doesn't block active development
-- It can look across multiple sessions simultaneously (like Anthropic's multi-agent harness)
-- Memory quality becomes its own objective, separate from task performance
-- It reduces latency — no in-band memory cleanup slows down the current task
-
-## Real-world impact
-
-Anthropic reported that teams using the memory system achieved:
-- **97% reduction in first-pass errors** (Rakuten, production agents)
-- **6x increase in completion rates** (Harvey, legal benchmark with dreaming)
-- **Reduced common issues** (WiseDocs, cross-session document verification)
-
-Applied to OpenCode: the agent stops re-discovering which command to run, which file to edit, and which error fix to apply — because it's in memory.
-
-## Memory raises the floor for every agent
-
-When agents share memory that's constantly improving, the baseline competence of every agent rises. An agent encountering a problem for the first time benefits from all previous agents' experience with that problem. Dreaming raises this floor even further by extracting cross-agent patterns that no single agent could discover alone.
-
-## Permission scopes — the hierarchy pattern
-
-Anthropic's design supports different access levels per memory store. Applied to OpenCode:
-
-| Scope | Example | Agent can |
-|---|---|---|
-| **Read-only shared** | Project conventions, coding standards, architecture docs | Read only |
-| **Read-write task** | `.opencode/memory/` | Read + write |
-| **Human-curated** | CLAUDE.md, ADR documents | Read only (human edits) |
-
-The Anthropic SRE demo shows this in practice: org-wide runbooks/SLO policies (read-only) + task-specific investigation notes (read-write). Agents read the stable shared knowledge and write their discoveries to task memory.
-
-## Why this works in OpenCode
-
-1. **CLAUDE.md is injected into every system prompt.** Adding memory-read/write instructions there means the agent sees them in every session — no opt-in, no remembering to enable it.
-2. **The agent already has Write/Edit/Bash tools.** It can create and update MD files. No new infrastructure needed.
-3. **File system IS the memory store.** No API keys, no external service. Works offline.
-4. **Git history is the version log.** Every memory change is tracked, revertible, attributable. This is the equivalent of Anthropic's version history + audit log.
-
-## Anti-patterns to avoid
-
-- **Memory inflation:** Writing to memory after every trivial task ("fixed a typo"). Only write when something would help a future session.
-- **Speculation in memory:** "I think the frontend uses Redux" — never write guesses. Only verified facts.
-- **Stale memory:** Codebase evolves, memory files don't auto-update. Dreaming should verify accuracy. Entries >3 months old get re-checked.
-- **Memory as crutch:** Memory supplements code reading, never replaces it. Always verify before trusting.
-- **Memory without metadata:** Undated, contextless entries are hard to trust. Always include date and brief context.
-- **Secrets in memory:** Never write API keys, tokens, passwords, or PII to memory files. Memory files may be committed to git or shared. Anthropic's enterprise customers run PII scanning on memory stores for this reason.
-
-## When to memory-write
-
-Write to memory when:
-- You discovered a non-obvious architecture fact (hidden dependency, implicit convention)
-- A task required ≥3 attempts to get right (the fix pattern is worth recording)
-- A command sequence worked that you'd need to rediscover later
-- You hit an error with an unobvious root cause
-- A tool/API behaved differently than documented
-
-Don't write when:
-- The fix was in the docs already
-- The task was trivial and the code is self-documenting
-- It's a guess, not a verified finding
+- Writing trivia ("ran npm install")
+- Speculation ("I think the frontend uses Redux")
+- Stale entries never re-verified
+- Using memory instead of reading code
