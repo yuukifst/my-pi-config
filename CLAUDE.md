@@ -52,7 +52,7 @@ Improving the project (audit, refactor, harden, optimize, review)? Read `~/.clau
 
 ## Agent Memory (self-learning)
 
-Memory is how this agent gets smarter across sessions. Every project has a `.opencode/memory/` directory with MD files the agent reads and writes. This is the OpenCode equivalent of Anthropic's managed agent memory stores.
+Memory is how this agent gets smarter across sessions. Every project has a `.opencode/memory/` directory with MD files the agent reads and writes.
 
 ### Session protocol (ALWAYS)
 
@@ -93,7 +93,7 @@ After 5+ significant sessions on a project, suggest the user run a dreaming sess
 Dreaming prompt template: `~/.config/opencode/dreaming.md`
 Memory philosophy reference: `~/.config/opencode/learnings/memory-system.md`
 
-Never run dreaming during active development — it is a separate out-of-band session, just like Anthropic's async dreaming jobs.
+Never run dreaming during active development — it is a separate out-of-band session.
 
 ### Context window management
 
