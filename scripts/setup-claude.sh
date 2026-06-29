@@ -6,19 +6,19 @@ repo="$(cd "$(dirname "$0")/.." && pwd)"
 claude="$HOME/.claude"
 bin="$HOME/.local/bin"
 crg="$HOME/.local/crg-venv"
-mkdir -p "$claude/skills" "$claude/learnings" "$bin"
+mkdir -p "$claude/skills" "$claude/rules" "$bin"
 
 echo "[1/5] Config files"
 cp "$repo/CLAUDE.md" "$claude/CLAUDE.md"
 cp "$repo/dreaming.md" "$claude/dreaming.md"
 cp -r "$repo/skills/." "$claude/skills/"
-cp -r "$repo/learnings/." "$claude/learnings/"
+cp -r "$repo/rules/." "$claude/rules/"
 # Also populate OpenCode config with companion files
 cfg="$HOME/.config/opencode"
 mkdir -p "$cfg"
 cp "$repo/CLAUDE.md" "$cfg/CLAUDE.md"
 cp "$repo/dreaming.md" "$cfg/dreaming.md"
-cp -r "$repo/learnings/." "$cfg/learnings/"
+cp -r "$repo/rules/." "$cfg/rules/"
 
 echo "[2/5] rtk"
 curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
@@ -44,15 +44,6 @@ claude plugin install caveman@caveman || true
 claude plugin install ponytail@ponytail || true
 claude plugin install superpowers@claude-plugins-official || true
 claude plugin install goal-ledger@goal-ledger || true
-
-echo "Settings (disable auto memory)"
-python3 - "$claude/settings.json" <<'PY'
-import json, os, sys
-p = sys.argv[1]
-s = json.load(open(p, encoding="utf-8")) if os.path.exists(p) else {}
-s.setdefault("env", {})["CLAUDE_CODE_DISABLE_AUTO_MEMORY"] = "1"
-json.dump(s, open(p, "w", encoding="utf-8"), indent=2)
-PY
 
 case ":$PATH:" in *":$bin:"*) ;; *) echo "Note: add $bin to PATH";; esac
 echo "Done. Restart Claude Code."

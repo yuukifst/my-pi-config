@@ -6,14 +6,14 @@ repo="$(cd "$(dirname "$0")/.." && pwd)"
 cfg="$HOME/.config/opencode"
 bin="$HOME/.local/bin"
 crg="$HOME/.local/crg-venv"
-mkdir -p "$cfg/skills" "$bin"
+mkdir -p "$cfg/skills" "$cfg/rules" "$bin"
 
 echo "[1/4] Config files"
 cp "$repo/opencode.jsonc" "$cfg/opencode.jsonc"
 cp "$repo/CLAUDE.md" "$cfg/CLAUDE.md"
 cp "$repo/dreaming.md" "$cfg/dreaming.md"
 cp -r "$repo/skills/." "$cfg/skills/"
-cp -r "$repo/learnings/." "$cfg/learnings/"
+cp -r "$repo/rules/." "$cfg/rules/"
 
 echo "[2/4] rtk"
 curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh

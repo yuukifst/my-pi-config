@@ -26,7 +26,7 @@ better code, verify it works.
 
 | Tool | Why | How |
 |------|-----|-----|
-| [agent-browser](https://agent-browser.dev) | Drives a real browser E2E — navigate, click, fill, assert via ref-based snapshots. ~10x fewer tokens than Playwright MCP. | MCP server (`agent-browser mcp`). |
+| [agent-browser](https://agent-browser.dev) | Drives a real browser E2E — navigate, click, fill, assert via ref-based snapshots (`snapshot` ≈ 200–400 tokens vs 3000–5000 for raw DOM). React DevTools + Web Vitals built in. ~10x fewer tokens than Playwright MCP. | Shell **CLI**, called directly (`npm i -g agent-browser`). Not an MCP server. Discovery via the `agent-browser` skill. Playwright kept only for durable multi-browser suites via the `webapp-testing` skill. |
 
 ### Development workflow
 
@@ -65,12 +65,12 @@ pwsh -File scripts/setup-claude.ps1     # Windows
 bash scripts/setup-claude.sh            # macOS / Linux
 ```
 
-Installs to `~/.claude`: copies `CLAUDE.md` + `skills/`; installs rtk (+`rtk init
--g` hook), no-mistakes, code-review-graph; registers the code-review-graph
-and agent-browser MCP servers; installs portless; installs the caveman, ponytail, superpowers and
-goal-ledger plugins; sets `env.CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` in
-`settings.json` (auto-memory off — stale Claude-only memory degrades decisions;
-keep durable context in `CLAUDE.md`/`AGENTS.md` instead).
+Installs to `~/.claude`: copies `CLAUDE.md` + `dreaming.md` + `skills/` + `rules/`;
+installs rtk (+`rtk init -g` hook), no-mistakes, code-review-graph, the agent-browser
+CLI, gh-axi; registers the code-review-graph MCP server (agent-browser is a CLI, not
+an MCP); installs portless; installs the caveman, ponytail, superpowers and
+goal-ledger plugins. Auto-memory is left **on** (the curated per-project memory dir
+is used alongside durable `CLAUDE.md`/`AGENTS.md` context).
 
 ### OpenCode (Linux / macOS)
 

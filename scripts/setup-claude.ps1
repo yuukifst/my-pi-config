@@ -6,11 +6,13 @@ $Repo   = Split-Path $PSScriptRoot -Parent
 $Claude = Join-Path $env:USERPROFILE ".claude"
 $Bin    = Join-Path $env:USERPROFILE ".local\bin"
 $Crg    = Join-Path $env:USERPROFILE ".local\crg-venv"
-New-Item -ItemType Directory -Force -Path $Bin, "$Claude\skills" | Out-Null
+New-Item -ItemType Directory -Force -Path $Bin, "$Claude\skills", "$Claude\rules" | Out-Null
 
 Write-Host "[1/5] Config files"
 Copy-Item "$Repo\CLAUDE.md" "$Claude\CLAUDE.md" -Force
+Copy-Item "$Repo\dreaming.md" "$Claude\dreaming.md" -Force
 Copy-Item "$Repo\skills\*" "$Claude\skills\" -Recurse -Force
+Copy-Item "$Repo\rules\*" "$Claude\rules\" -Recurse -Force
 
 Write-Host "[2/5] rtk"
 $rtkUrl = (Invoke-RestMethod "https://api.github.com/repos/rtk-ai/rtk/releases/latest").assets |
@@ -27,15 +29,19 @@ if ($userPath -notlike "*$Bin*") {
 }
 & "$Bin\rtk.exe" init -g | Out-Null
 
-Write-Host "[3/5] no-mistakes + code-review-graph"
+Write-Host "[3/5] no-mistakes + code-review-graph + portless + agent-browser + gh-axi"
 Invoke-RestMethod "https://raw.githubusercontent.com/kunchenguid/no-mistakes/main/docs/install.ps1" | Invoke-Expression
 python -m venv $Crg
 & "$Crg\Scripts\pip.exe" install -q --upgrade pip code-review-graph
+npm install -g portless agent-browser gh-axi
+agent-browser install
 
 Write-Host "[4/5] MCP servers"
-foreach ($n in "code-review-graph", "playwright") { claude mcp remove $n -s user 2>$null }
+# agent-browser (agent-browser.dev) is a shell CLI for agents, NOT an MCP server — installed
+# above and called directly. playwright dropped in favor of agent-browser. Both kept in the
+# remove loop only to clear any stale user-scope registration.
+foreach ($n in "code-review-graph", "playwright", "agent-browser") { claude mcp remove $n -s user 2>$null }
 claude mcp add code-review-graph -s user -- "$Crg\Scripts\code-review-graph.exe" serve
-claude mcp add playwright -s user -- npx -y "@playwright/mcp@latest"
 
 Write-Host "[5/5] Plugins"
 foreach ($m in "JuliusBrussee/caveman", "DietrichGebert/ponytail", "anthropics/claude-plugins-official", "kingbootoshi/goal-ledger") {
@@ -45,14 +51,5 @@ claude plugin install caveman@caveman
 claude plugin install ponytail@ponytail
 claude plugin install superpowers@claude-plugins-official
 claude plugin install goal-ledger@goal-ledger
-
-Write-Host "Settings (disable auto memory)"
-@'
-import json, os, sys
-p = sys.argv[1]
-s = json.load(open(p, encoding="utf-8")) if os.path.exists(p) else {}
-s.setdefault("env", {})["CLAUDE_CODE_DISABLE_AUTO_MEMORY"] = "1"
-json.dump(s, open(p, "w", encoding="utf-8"), indent=2)
-'@ | python - "$Claude\settings.json"
 
 Write-Host "Done. Restart Claude Code."
