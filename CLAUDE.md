@@ -10,6 +10,7 @@ Cross-project guidance. Lean by design: only what's non-obvious or machine-speci
 - Don't print full files back; show diffs with `...` for omitted parts.
 - When writing or substantially editing long Markdown files, put each full sentence on its own line.
 - Never manually modify CHANGELOG.md files or any files marked as auto-generated.
+- **Don't prune an agent's own comments on refactor** — they carry intent/provenance the next edit needs. Comment the *why* (bug, upstream constraint, issue#/SHA), never the obvious *what*. Docstrings on public functions: intent + one usage example.
 
 ## Working method
 
@@ -25,13 +26,28 @@ Cross-project guidance. Lean by design: only what's non-obvious or machine-speci
 - **Bug fixes:** reproduce the bug in an E2E setting first, as close to how an end user experiences it. This ensures you find the real problem, not a symptom.
 - **Lint/test hygiene:** if you see a lint failure, test failure, or test flakiness, fix it — even if it wasn't caused by your change. Leave the codebase cleaner than you found it.
 - **UI work:** be obsessive about pixel perfection. If something looks off, even if unrelated to your task, try to fix it along the way.
+- **Standardize for agent automation.** Same command does the same thing across projects (`bin/deploy`, tag-release, layout) so an agent can run "deploy"/"cut a release" without guessing. Predictable structure is the precondition for trusting agent-run commands.
+- **README leads with the problem, not the stack.** Top = what problem it solves and for whom, in one sentence. Stack/architecture/deps go in `docs/` for contributors. It's a "solution looking for a problem" if you can't state the use-case in one line.
 
 ## Code rules (override model defaults)
 
 - **Before a helper:** grep for the canonical one. Duplicating an existing helper is a failure, not a nit.
-- **File > 1000 lines = decompose first**, don't append.
+- **File > 500 lines = decompose first**, don't append. The agent reads in bounded chunks — a unit that fits one read is reasoned about with full attention; a paginated one fragments it.
+- **Grep-able names:** unique, distinctive names are the agent's nav API. Avoid `data`/`handler`/`Manager`/`Service` — a name that returns 50 grep hits is wrong; one that returns a handful is right.
 - **Types explicit:** no `any`, no `@ts-ignore`, no `as X` papering over an invariant. No `T | undefined` on always-set fields.
 - **Tests:** cover bugfixes with a regression test. Mock external I/O with named fakes.
+
+## Clean code for agents (the reader is an LLM)
+
+The primary reader of code is now the agent, not a human. These are technical constraints, not style opinions — they map to token cost, tool-call latency, and output quality.
+
+- **SRP, small functions.** One responsibility per module, one thing per function. Three 250-line modules beat one 800-line file doing three things — the agent isolates and edits one without loading the rest.
+- **Flatten control flow.** Early returns / guard clauses over nested `if`/`for`/`try`. Each indent level is more state the model tracks; deep nesting measurably degrades its answers. Cap ~2 levels.
+- **Inject dependencies, don't hardcode them.** Constructor/parameter injection so the agent swaps a real I/O dep for a named fake without monkey-patching or spinning up infra.
+- **Tests run headless, one command.** No manual DB seed, no missing config, no secret. Predictable output the agent parses. If the test can't run unattended, the agent's generate→run→repair loop breaks.
+- **Formatter decides style.** Run the language default (`prettier`/`ruff`/`gofmt`/`cargo fmt`/`rubocop -A`). Never spend a turn on tabs/columns/brace style.
+- **Structured (JSON) logs for debug/observability** — named fields the agent filters and correlates. Plain text only for user-facing CLI output.
+- **Defensive code is opt-in — ship the happy path unless the project asks for more.** The agent won't propose retry/backoff, timeout, circuit-breaker, rate-limit, or fallback on its own (it doesn't know your failure points). If a project needs them, its rule file must name the categories or they won't appear.
 
 ## Tools (machine-specific)
 
@@ -51,67 +67,15 @@ Improving the project (audit, refactor, harden, optimize, review)? Read `~/.clau
 
 ## Agent Memory (self-learning)
 
-Memory is how this agent gets smarter across sessions. Every project has a `.opencode/memory/` directory with MD files the agent reads and writes.
+Reading/writing cross-session memory, or 5+ sessions deep on a project (consider dreaming/consolidation)? Read `~/.claude/rules/memory-system.md` first — file taxonomy (`INDEX/codebase/patterns/errors`), the ≥5-min write threshold, when-not-to-write, dreaming. Otherwise skip.
 
-### Session protocol (ALWAYS)
-
-**Start of session — before any action:**
-- Check if `.opencode/memory/` exists in the project. If it does, read `INDEX.md` first to know what's available, then read relevant files (`codebase.md`, `patterns.md`, `errors.md`) for context relevant to the current task.
-- Don't re-read memory in the same session unless the task domain changes.
-
-**End of session — after completing work:**
-- If you discovered something a future session would benefit from, write it to the appropriate memory file (see taxonomy below).
-- Never write guesses. Only verified facts.
-- Trivial actions ("ran npm install") do NOT get written. Threshold: "would this save a future session ≥5 minutes?"
-
-**When to write:**
-- Non-obvious architecture fact (hidden dependency, implicit convention)
-- Task required ≥3 attempts to get right (record the fix pattern)
-- Command sequence that worked and would be hard to rediscover
-- Error with unobvious root cause + verified fix
-- Tool/API behavior that differs from documentation
-
-**When NOT to write:**
-- Fix was already in docs or code comments
-- Trivial one-liner with obvious cause
-- Speculation or guess about how something works
-
-### Memory file taxonomy
-
-| File | Content | Trigger to write |
-|---|---|---|
-| `INDEX.md` | Navigation map: summaries + last-modified dates for all memory files | After every write to any memory file |
-| `codebase.md` | Architecture: module boundaries, key files, dependency chains, conventions | Discovered a non-obvious structural fact |
-| `patterns.md` | Reusable strategies: workflows, command sequences, how-to guides | Completed a task that required a novel approach |
-| `errors.md` | Error patterns: root cause + fix | Diagnosed and fixed an error with unobvious cause |
-
-### Dreaming (memory consolidation)
-
-After 5+ significant sessions on a project, suggest the user run a dreaming session. A dreaming session reads all memory files, deduplicates, extracts cross-session patterns, verifies accuracy, and produces cleaned-up files.
-
-Dreaming prompt template: `dreaming.md` in your agent's config dir (`~/.claude/` on Claude Code, `~/.config/opencode/` on OpenCode).
-Memory philosophy reference: `rules/memory-system.md` in that same config dir.
-
-Never run dreaming during active development — it is a separate out-of-band session.
-
-### Context window management
-
-In very long sessions (>30 complex turns), context accumulates and can drift. When starting a new major task after extensive work, suggest a fresh session — the memory store preserves learnings across sessions.
+- Store path is harness-dependent: `.opencode/memory/` on OpenCode; the harness memory dir (`MEMORY.md` index) on Claude Code.
+- Never run dreaming during active development — separate out-of-band session.
+- Very long session (>30 complex turns) → suggest a fresh session; the memory store preserves learnings.
 
 ## Prompting — writing effective instructions
 
-When writing prompts for sub-agents, tools, or LLM calls, apply these principles (from `~/.claude/rules/prompt-engineering.md`):
-
-1. **Task first, context second.** State exactly what to do before providing data to analyze.
-2. **Use delimiters.** Markdown headers, XML tags, or triple backticks separate instructions from content — prevents context bleeding.
-3. **Set the output format upfront.** "JSON only", "just the diff", "file:line references."
-4. **Include an example** for non-obvious tasks. One correct input/output pair is worth paragraphs of explanation.
-5. **Add anti-hallucination guardrails.** "State if uncertain", "cite file:line", "insufficient data → say so."
-6. **Order matters.** Stable context first (rules, schemas), dynamic data second (logs, code), analysis last.
-7. **Prompt hygiene.** Periodically review instructions for stale cruft — patches for old model limitations, redundant constraints, contradictory rules. If a rule hasn't been relevant in 10+ sessions, remove it. See `~/.claude/rules/prompting-playbook.md` for the maintenance playbook.
-8. **Version control defensive changes.** Every "never X" or "always Y" rule in CLAUDE.md should have a git commit explaining WHY it was added. During dreaming, check whether defensive patches have become counterproductive.
-
-For agent workflow strategies, see `~/.claude/rules/agent-best-practices.md`.
+Writing a prompt for a sub-agent, tool, or LLM call? Read `~/.claude/rules/prompt-engineering.md` first (task-first, delimiters, output contract upfront, balanced tradeoffs, tool-over-verbal, anti-hallucination, stable-context-before-dynamic-data) + `~/.claude/rules/prompting-playbook.md` for maintenance (prune stale model-patches, version-control defensive rules). Otherwise skip. Agent workflow strategies: `~/.claude/rules/agent-best-practices.md`.
 
 ## Git — commit & push (read the rules file first)
 

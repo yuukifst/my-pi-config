@@ -25,6 +25,7 @@ Good: "Read `calculateTotal` in `src/billing.ts`. Trace negative quantity throug
 8. **Tool over verbal.** Don't say "be careful with X." Give a specific tool/process: "Run `mypy .` after editing" not "make sure imports are correct."
 9. **Balanced instructions.** Give both sides of every tradeoff. "Never install packages to fix errors. If a new dependency is genuinely needed, confirm with the user."
 10. **Version control for defensive rules.** Every "never X" or "always Y" needs a git commit explaining WHY. Re-check during dreaming — model improvements may make the rule counterproductive.
+11. **Instructions don't add capability.** If the task needs something the model is bad at (precise calculation, factual lookup, deterministic parsing), give it an executable *tool* (function calling) — don't restate the instruction. "It's critical to calculate correctly" doesn't improve the arithmetic; a calculate tool does. Distinct from #8 (process vs verbal): here the capability is absent, not the phrasing.
 
 ## Debugging prompts
 

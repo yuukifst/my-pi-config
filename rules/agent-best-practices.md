@@ -13,6 +13,11 @@ Non-obvious patterns for working with code agents (extracted from Anthropic's be
 - **Check work before showing.** Run lint/typecheck on your output before presenting it.
 - **Commit after each feature chunk.** Not after hours of work. Review diffs before committing.
 
+## Building an agentic task
+
+- **Split the monolith.** A complex agentic task runs better as isolated specialized prompts (generate → evaluate → repair) than one prompt doing everything — fewer tokens, lower latency, each step repeatable.
+- **Three levers, not one.** When prompting stops improving the result, adjust the *model* (bigger/reasoning), *thinking* (adaptive/extended), or *harness* (give a tool, split the loop) — not just the prompt text.
+
 ## Multiple agents
 
 - **Shared state via `.opencode/memory/`.** Multiple sessions read/write the same memory files. No other coordination needed.
