@@ -147,9 +147,9 @@
       "template": "Load the to-prd skill via the skill tool and turn the current conversation context into a PRD, publishing it to the project issue tracker.",
       "description": "Turn conversation context into a PRD and publish it"
     },
-    "write-a-skill": {
-      "template": "Load the write-a-skill skill via the skill tool and create a new agent skill with proper structure, progressive disclosure, and bundled resources.",
-      "description": "Author a new agent skill"
+    "writing-great-skills": {
+      "template": "Load the writing-great-skills skill via the skill tool for writing and editing skills well — vocabulary and principles that make a skill predictable.",
+      "description": "Reference for writing and editing skills well"
     },
     "brandkit": {
       "template": "Load the brandkit skill via the skill tool and create brand identity, logo systems, or visual guidelines.",
